@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: report-postgres-config
+  labels:
+    app: report-postgres
+data:
+  POSTGRES_DB: report_db
+  POSTGRES_USER: reportadmin
+  POSTGRES_PASSWORD: reportadmsecret
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: report-postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: report-postgres
+spec:
+  selector:
+    app: report-postgres
+  ports:
+    - port: 5432
+      nodePort: 31535
+      targetPort: 5432
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-postgres
+spec:
+  selector:
+    matchLabels:
+      app: report-postgres
+  template:
+    metadata:
+      labels:
+        app: report-postgres
+    spec:
+      containers:
+        - name: report-postgres
+          image: postgres:14.4-alpine
+          envFrom:
+            - configMapRef:
+                name: report-postgres-config
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: report-postgres-pvc

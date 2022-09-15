@@ -1,0 +1,40 @@
+version: '3.8'
+
+x-spring-healthcheck: &actuator-healthcheck
+  healthcheck:
+    test: "curl --fail --silent http://localhost:8080/actuator/health | grep UP || exit 1"
+    retries: 5
+    interval: 10s
+    timeout: 5s
+
+x-jre-image: &jre-image
+  entrypoint: [ "java", "-jar", "/opt/root.jar" ]
+  image: eclipse-temurin:17.0.3_7-jre
+
+services:
+  eureka-server:
+    <<: *jre-image
+    container_name: eureka-server
+    volumes:
+      - ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar:/opt/root.jar
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: "curl --fail --silent http://localhost:8761/actuator/health | grep UP || exit 1"
+      retries: 5
+      interval: 10s
+      timeout: 5s
+
+  user-service:
+    <<: *jre-image
+    <<: *actuator-healthcheck
+    container_name: user-service
+    volumes:
+      - ./user-service/build/libs/user-service-0.0.1-SNAPSHOT.jar:/opt/root.jar
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    ports:
+      - "7071:8080"
