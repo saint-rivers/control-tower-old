@@ -1,4 +1,7 @@
-package com.saintrivers.controltower.model
+package com.saintrivers.controltower.model.request
+
+import com.saintrivers.controltower.common.model.UserRequest
+import com.saintrivers.controltower.model.entity.AppUser
 
 
 data class AppUserRequest(

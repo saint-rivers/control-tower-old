@@ -1,6 +1,7 @@
 package com.saintrivers.controltower.keycloak.user
 
-import com.saintrivers.controltower.model.AppUserDto
+import com.saintrivers.controltower.common.model.AppUser
+import com.saintrivers.controltower.common.model.UserRequest
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.RoleRepresentation
@@ -17,21 +18,21 @@ class UserService(
     @Value("\${keycloak.realm}")
     private val realm: String
 ) {
-    fun findAll(): List<AppUserDto> =
+    fun findAll(): List<AppUser> =
         keycloak
             .realm(realm)
             .users()
             .list()
             .map { it.toDto() }
 
-    fun findByUsername(username: String): List<AppUserDto> =
+    fun findByUsername(username: String): List<AppUser> =
         keycloak
             .realm(realm)
             .users()
             .search(username)
             .map { it.toDto() }
 
-    fun findByEmail(email: String): List<AppUserDto> =
+    fun findByEmail(email: String): List<AppUser> =
         keycloak
             .realm(realm)
             .users()
@@ -39,7 +40,7 @@ class UserService(
             .filter { it.email.contains(email, true) }
             .map { it.toDto() }
 
-    fun findById(id: String): AppUserDto =
+    fun findById(id: String): AppUser =
         keycloak
             .realm(realm)
             .users()

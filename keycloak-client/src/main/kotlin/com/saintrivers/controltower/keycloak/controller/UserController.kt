@@ -1,9 +1,9 @@
 package com.saintrivers.controltower.keycloak.controller
 
+import com.saintrivers.controltower.common.model.AppUser
+import com.saintrivers.controltower.common.model.UserRequest
 import com.saintrivers.controltower.keycloak.role.RoleService
-import com.saintrivers.controltower.keycloak.user.UserRequest
 import com.saintrivers.controltower.keycloak.user.UserService
-import com.saintrivers.controltower.model.AppUserDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -18,7 +18,7 @@ class UserController(
         userService.findAll()
 
     @GetMapping("/{id}")
-    fun findById(@PathVariable id: String): AppUserDto {
+    fun findById(@PathVariable id: String): AppUser {
         return userService.findById(id)
     }
 
@@ -31,7 +31,7 @@ class UserController(
         userService.findByEmail(email)
 
     @PostMapping
-    fun create(@RequestBody userRequest: UserRequest): ResponseEntity<AppUserDto> {
+    fun create(@RequestBody userRequest: UserRequest): ResponseEntity<AppUser> {
         val response = userService.create(userRequest)
 
         if (response.status != 201)

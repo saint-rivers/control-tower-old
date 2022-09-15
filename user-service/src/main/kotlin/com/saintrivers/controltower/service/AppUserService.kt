@@ -1,7 +1,7 @@
 package com.saintrivers.controltower.service
 
-import com.saintrivers.controltower.model.AppUserDto
-import com.saintrivers.controltower.model.AppUserRequest
+import com.saintrivers.controltower.model.dto.AppUserDto
+import com.saintrivers.controltower.model.request.AppUserRequest
 import reactor.core.publisher.Mono
 
 interface AppUserService {

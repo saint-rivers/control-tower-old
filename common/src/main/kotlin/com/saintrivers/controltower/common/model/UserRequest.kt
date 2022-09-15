@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.keycloak.user
+package com.saintrivers.controltower.common.model
 
 data class UserRequest(
     val username: String,

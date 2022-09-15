@@ -1,6 +1,6 @@
 package com.saintrivers.controltower.handler
 
-import com.saintrivers.controltower.model.AppUserRequest
+import com.saintrivers.controltower.model.request.AppUserRequest
 import com.saintrivers.controltower.service.AppUserService
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -21,5 +21,9 @@ class AppUserHandler(
             .flatMap {
                 ServerResponse.ok().bodyValue(it)
             }
+    }
+
+    fun createGroup(req: ServerRequest): Mono<ServerResponse> {
+        TODO("not yet implemented")
     }
 }

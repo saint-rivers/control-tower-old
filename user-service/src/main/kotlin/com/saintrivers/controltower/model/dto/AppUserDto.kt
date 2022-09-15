@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.model
+package com.saintrivers.controltower.model.dto
 
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate

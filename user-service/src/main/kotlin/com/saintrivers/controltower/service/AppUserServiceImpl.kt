@@ -1,8 +1,8 @@
 package com.saintrivers.controltower.service
 
-import com.saintrivers.controltower.model.AppUserDto
-import com.saintrivers.controltower.model.AppUserRequest
-import com.saintrivers.controltower.model.UserRequest
+import com.saintrivers.controltower.common.model.UserRequest
+import com.saintrivers.controltower.model.dto.AppUserDto
+import com.saintrivers.controltower.model.request.AppUserRequest
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
