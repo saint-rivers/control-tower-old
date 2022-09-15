@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.service
+package com.saintrivers.controltower.service.user
 
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.request.AppUserRequest

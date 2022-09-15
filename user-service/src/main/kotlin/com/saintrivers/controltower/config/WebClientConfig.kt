@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.client
+package com.saintrivers.controltower.config
 
 import com.netflix.discovery.EurekaClient
 import io.netty.resolver.DefaultAddressResolverGroup

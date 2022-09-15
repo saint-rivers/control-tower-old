@@ -1,7 +1,7 @@
 package com.saintrivers.controltower.handler
 
 import com.saintrivers.controltower.model.request.AppUserRequest
-import com.saintrivers.controltower.service.AppUserService
+import com.saintrivers.controltower.service.user.AppUserService
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
@@ -23,7 +23,4 @@ class AppUserHandler(
             }
     }
 
-    fun createGroup(req: ServerRequest): Mono<ServerResponse> {
-        TODO("not yet implemented")
-    }
 }

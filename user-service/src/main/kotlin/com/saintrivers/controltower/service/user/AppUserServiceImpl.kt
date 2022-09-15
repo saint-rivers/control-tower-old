@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.service
+package com.saintrivers.controltower.service.user
 
 import com.saintrivers.controltower.common.model.UserRequest
 import com.saintrivers.controltower.model.dto.AppUserDto
@@ -12,12 +12,11 @@ import java.time.LocalDateTime
 @Service
 class AppUserServiceImpl(
     val appUserRepository: AppUserRepository,
-    @Qualifier("KeycloakClient") val keycloakClient: WebClient
+    @Qualifier("KeycloakClient") val keycloakClient: WebClient,
 ) : AppUserService {
 
     override fun registerUser(req: AppUserRequest): Mono<AppUserDto> {
         val userEntity = req.toEntity()
-
 
         val created = keycloakClient.post()
             .uri("/api/user")

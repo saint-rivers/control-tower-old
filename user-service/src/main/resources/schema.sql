@@ -23,8 +23,13 @@ CREATE TABLE IF NOT EXISTS groups
 
 CREATE TABLE IF NOT EXISTS group_members
 (
-    group_id   uuid references groups (id) on delete cascade,
-    user_id    bigint references app_users (id) on delete cascade,
+    group_id   uuid,
+    user_id    integer,
+    added_by   integer,
     date_added timestamp not null default now(),
+
+    foreign key (group_id) references groups (id) on delete cascade,
+    foreign key (user_id) references app_users (id) on delete cascade,
+    foreign key (added_by) references app_users (id) on delete cascade,
     primary key (group_id, user_id)
 );

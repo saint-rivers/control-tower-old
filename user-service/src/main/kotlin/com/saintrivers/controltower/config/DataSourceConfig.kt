@@ -7,7 +7,6 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories
 import org.springframework.r2dbc.connection.init.ConnectionFactoryInitializer
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator
-import org.springframework.r2dbc.core.DatabaseClient
 
 @Configuration
 @EnableR2dbcRepositories
@@ -19,14 +18,6 @@ class DataSourceConfig {
             setConnectionFactory(connectionFactory)
             setDatabasePopulator(ResourceDatabasePopulator(ClassPathResource("schema.sql")))
         }
-
-    @Bean
-    fun databaseClient(connectionFactory: ConnectionFactory): DatabaseClient {
-        return DatabaseClient.builder()
-            .connectionFactory(connectionFactory)
-            .namedParameters(true)
-            .build()
-    }
 }
 
 
