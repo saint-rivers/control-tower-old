@@ -11,6 +11,13 @@ import reactor.core.publisher.Mono
 class AppUserHandler(
     val appUserService: AppUserService
 ) {
+    fun findUserById(req: ServerRequest): Mono<ServerResponse> =
+        appUserService.findById(req.pathVariable("id"))
+            .flatMap {
+                ServerResponse.ok().bodyValue(it)
+            }
+
+
 
     fun registerUser(req: ServerRequest): Mono<ServerResponse> {
         return req.bodyToMono(AppUserRequest::class.java)

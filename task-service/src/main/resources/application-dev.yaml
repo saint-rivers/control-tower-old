@@ -1,0 +1,19 @@
+server:
+  port: 7072
+
+spring:
+  application:
+    name: task-service
+  r2dbc:
+    url: r2dbc:pool:postgresql://192.168.49.2:31537/task_db
+    username: taskadmin
+    password: taskadmsecret
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true

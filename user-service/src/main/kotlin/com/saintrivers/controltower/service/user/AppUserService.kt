@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono
 interface AppUserService {
 
     fun registerUser(req: AppUserRequest): Mono<AppUserDto>
+    fun findById(id: String): Mono<AppUserDto>
 }

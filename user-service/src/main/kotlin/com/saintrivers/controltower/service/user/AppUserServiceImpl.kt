@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class AppUserServiceImpl(
@@ -33,4 +34,10 @@ class AppUserServiceImpl(
         }
             .log()
     }
+
+    override fun findById(id: String): Mono<AppUserDto> =
+        appUserRepository.findByAuthId(UUID.fromString(id))
+            .map { it.toDto() }
+
+
 }

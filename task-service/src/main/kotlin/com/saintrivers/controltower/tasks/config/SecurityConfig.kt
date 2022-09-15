@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.config
+package com.saintrivers.controltower.tasks.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,9 +27,7 @@ class SecurityConfig {
     fun securityFilter(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http.invoke {
             authorizeExchange {
-//                authorize("/**", permitAll)
-                authorize("/api/v1/groups/**", authenticated)
-                authorize("/api/v1/users/**", authenticated)
+                authorize("/api/v1/tasks/**", authenticated)
             }
             cors { }
             csrf { disable() }

@@ -17,7 +17,7 @@ plugins {
 allprojects {
 
     group = "com.saintrivers.controltower"
-    version = "0.0.1-SNAPSHOT"
+    version = "1.0.1"
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {

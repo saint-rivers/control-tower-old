@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: task-service
+  profiles:
+    active: default,dev
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.saintrivers.tech/auth/realms/control-tower
+          jwk-set-uri: https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/certs
+
