@@ -2,11 +2,11 @@ package com.saintrivers.controltower
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient
 import org.springframework.data.r2dbc.config.EnableR2dbcAuditing
 
 @SpringBootApplication
-@EnableDiscoveryClient
+@EnableEurekaClient
 @EnableR2dbcAuditing
 class UserServiceApplication
 
