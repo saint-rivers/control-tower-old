@@ -1,5 +1,6 @@
 package com.saintrivers.controltower.tasks.handler
 
+import com.saintrivers.controltower.tasks.model.dto.TaskDto
 import com.saintrivers.controltower.tasks.model.request.TaskRequest
 import com.saintrivers.controltower.tasks.service.TaskService
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
@@ -16,7 +17,16 @@ class TaskHandler(val taskService: TaskService) {
         ReactiveSecurityContextHolder.getContext()
             .map { it.authentication.principal }
             .cast(Jwt::class.java)
-            .log()
+
+    fun findTasksOfUserInGroup(req: ServerRequest): Mono<ServerResponse> {
+        val groupId = UUID.fromString(req.queryParam("group").get())
+        val userId = UUID.fromString(req.queryParam("user").get())
+
+        return ServerResponse.ok().body(
+            taskService.getTasksOfUserInGroup(groupId, userId),
+            TaskDto::class.java
+        )
+    }
 
     fun createTask(req: ServerRequest): Mono<ServerResponse> =
         req.bodyToMono(TaskRequest::class.java).zipWith(getAuthenticationPrincipal())
@@ -27,7 +37,7 @@ class TaskHandler(val taskService: TaskService) {
             .flatMap {
                 ServerResponse.ok().bodyValue(it)
             }
-//            .onErrorResume {
-//                ServerResponse.badRequest().bodyValue(mapOf("message" to it.localizedMessage))
-//            }
+            .onErrorResume {
+                ServerResponse.badRequest().bodyValue(mapOf("message" to it.localizedMessage))
+            }
 }

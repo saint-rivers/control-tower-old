@@ -2,12 +2,14 @@ package com.saintrivers.controltower.tasks.service
 
 import com.saintrivers.controltower.common.model.AppUser
 import com.saintrivers.controltower.tasks.model.dto.TaskDto
+import com.saintrivers.controltower.tasks.model.entity.Task
 import com.saintrivers.controltower.tasks.model.request.TaskRequest
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.util.UUID
@@ -42,9 +44,7 @@ class TaskServiceImpl(
         entity.createdDate = LocalDateTime.now()
         entity.lastModified = entity.createdDate
         entity.createdBy = requester
-
-        val createdBy = fetchUser(entity.createdBy!!)
-        val assignedTo = fetchUser(taskRequest.assignedTo)
+        entity.assignedTo = requester
 
         return taskRepository.save(entity)
             .zipWith(taskRepository.selectNameOfTaskStatusId(initialTaskStatus))
@@ -53,6 +53,14 @@ class TaskServiceImpl(
                 res.status = it.t2
                 res
             }
+            .fetchAndZipRelatedUsers(entity)
+    }
+
+    fun Mono<TaskDto>.fetchAndZipRelatedUsers(entity: Task): Mono<TaskDto> {
+        val createdBy = fetchUser(entity.createdBy!!)
+        val assignedTo = fetchUser(entity.assignedTo!!)
+
+        return this
             .zipWith(createdBy).map {
                 it.t1.createdBy = it.t2
                 it.t1
@@ -62,5 +70,25 @@ class TaskServiceImpl(
                 it.t1
             }
     }
+
+
+    override fun getTasksOfUserInGroup(groupId: UUID, userId: UUID): Flux<TaskDto> {
+        val taskFlux = taskRepository
+            .findAllByGroupIdAndAssignedTo(
+                groupId = groupId,
+                assignedTo = userId
+            )
+
+        return taskFlux
+            .map { it.toDto() }
+            .zipWith(taskFlux)
+            .flatMap {
+                Mono.just(it.t1)
+                    .fetchAndZipRelatedUsers(
+                        Task(createdBy = it.t2.createdBy, assignedTo = it.t2.assignedTo)
+                    )
+            }
+    }
+
 
 }
