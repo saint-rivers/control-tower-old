@@ -7,7 +7,6 @@ import org.springframework.data.r2dbc.config.EnableR2dbcAuditing
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableR2dbcAuditing
 class UserServiceApplication
 
 fun main(args: Array<String>) {
