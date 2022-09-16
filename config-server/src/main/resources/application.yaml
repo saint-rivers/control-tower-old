@@ -1,0 +1,24 @@
+server:
+  port: 8888
+
+spring:
+  profiles:
+    active: default
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/saint-rivers/control-tower-config.git
+          username: ${GIT_USERNAME}
+          password: ${GIT_PASSWORD}
+          clone-on-start: true
+          search-paths:
+            - task-service
+            - user-service
+            - keycloak-client
+            - api-gateway
+          default-label: main
+  security:
+    user:
+      name: root
+      password: tmpsecret

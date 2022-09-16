@@ -16,5 +16,6 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
 
+    implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.3")
     implementation(project(":common"))
 }

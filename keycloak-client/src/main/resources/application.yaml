@@ -1,19 +1,5 @@
-server:
-  port: 7071
-
 spring:
   application:
     name: keycloak-client
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://auth.saintrivers.tech/auth/realms/control-tower
-          jwk-set-uri: https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/certs
-
-keycloak:
-  realm: control-tower
-  resource: control-tower-microservice
-  auth-server-url: https://auth.saintrivers.tech/auth
-  credentials:
-    secret: CQpcpyUu3fdYqAazbuEqtmrkrQqibkBC
+  config:
+    import: optional:configserver:http://localhost:8888/
