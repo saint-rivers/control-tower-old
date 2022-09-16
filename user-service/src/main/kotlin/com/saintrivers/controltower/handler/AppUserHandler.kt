@@ -17,8 +17,6 @@ class AppUserHandler(
                 ServerResponse.ok().bodyValue(it)
             }
 
-
-
     fun registerUser(req: ServerRequest): Mono<ServerResponse> {
         return req.bodyToMono(AppUserRequest::class.java)
             .flatMap {

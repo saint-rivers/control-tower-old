@@ -11,12 +11,52 @@ x-jre-image: &jre-image
   entrypoint: [ "java", "-jar", "/opt/root.jar" ]
   image: eclipse-temurin:17.0.3_7-jre
 
+x-postgres-config: &postgres-config
+  image: postgres:14.4-alpine
+  environment:
+    PGDATA: /var/lib/postgresql/data
+  healthcheck:
+    test: [ "CMD","pg_isready","-U","postgres" ]
+    interval: 10s
+    timeout: 5s
+    retries: 3
+  restart: unless-stopped
+
+volumes:
+  task_data:
+  user_data:
+
 services:
+
+  task-database:
+    <<: *postgres-config
+    container_name: task-database
+    ports:
+      - "4433:5432"
+    environment:
+      - POSTGRES_DB=task_db
+      - POSTGRES_USER=taskadmin
+      - POSTGRES_PASSWORD=taskadmsecret
+    volumes:
+      - task_data:/var/lib/postgresql/data
+
+  user-database:
+    <<: *postgres-config
+    container_name: user-database
+    ports:
+      - "4434:5432"
+    environment:
+      - POSTGRES_DB=user_db
+      - POSTGRES_USER=useradmin
+      - POSTGRES_PASSWORD=useradmsecret
+    volumes:
+      - user_data:/var/lib/postgresql/data
+
   eureka-server:
     <<: *jre-image
     container_name: eureka-server
     volumes:
-      - ./eureka-server/build/libs/eureka-server-0.0.1-SNAPSHOT.jar:/opt/root.jar
+      - ./eureka-server/build/libs/eureka-server-1.0.1.jar:/opt/root.jar
     ports:
       - "8761:8761"
     healthcheck:
@@ -25,16 +65,68 @@ services:
       interval: 10s
       timeout: 5s
 
-  user-service:
+  api-gateway:
     <<: *jre-image
     <<: *actuator-healthcheck
-    container_name: user-service
+    container_name: api-gateway
     volumes:
-      - ./user-service/build/libs/user-service-0.0.1-SNAPSHOT.jar:/opt/root.jar
+      - ./api-gateway/build/libs/api-gateway-1.0.1.jar:/opt/root.jar
     depends_on:
       eureka-server:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: default,prod
     ports:
-      - "7071:8080"
+      - "8080:8080"
+
+  keycloak-client:
+    <<: *jre-image
+    <<: *actuator-healthcheck
+    container_name: keycloak-client
+    volumes:
+      - ./keycloak-client/build/libs/keycloak-client-1.0.1.jar:/opt/root.jar
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: default,prod
+    ports:
+      - "7068-7069:8080"
+
+  user-service:
+    <<: *jre-image
+    <<: *actuator-healthcheck
+#    container_name: user-service
+    volumes:
+      - ./user-service/build/libs/user-service-1.0.1.jar:/opt/root.jar
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: default,prod
+    ports:
+      - "7070-7071:8080"
+
+  task-service:
+    <<: *jre-image
+    <<: *actuator-healthcheck
+#    container_name: task-service
+    volumes:
+      - ./task-service/build/libs/task-service-1.0.1.jar:/opt/root.jar
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      user-service:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: default,prod
+    ports:
+      - "7072-7073:8080"
+
+  zipkin-server:
+    image: openzipkin/zipkin
+    container_name: zipkin-server
+    expose:
+      - '9411'
+    ports:
+      - '9411:9411'

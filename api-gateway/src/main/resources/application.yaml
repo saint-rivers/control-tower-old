@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: userModule
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/users/**
+#          filters:
+#            - StripPrefix=1
+#            - TokenRelay=
+#            - RemoveRequestHeader=Cookie
+        - id: taskModule
+          uri: lb://TASK-SERVICE
+          predicates:
+            - Path=/api/v1/tasks/**
+#          filters:
+#            - StripPrefix=1
+#            - TokenRelay=
+#            - RemoveRequestHeader=Cookie
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.saintrivers.tech/auth/realms/control-tower
+          jwk-set-uri: https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/certs
+
+#  security:
+#    oauth2:
+#      client:
+#        provider:
+#          keycloak:
+#            issuer-uri: https://auth.saintrivers.tech/auth/realms/control-tower
+#        registration:
+#          quotes-client:
+#            provider: keycloak
+#            client-id: control-tower-microservice
+#            client-secret: CQpcpyUu3fdYqAazbuEqtmrkrQqibkBC
+#            scope:
+#              - email
+#              - profile
+#              - roles

@@ -23,9 +23,9 @@ class SecurityConfig {
             override fun addCorsMappings(registry: CorsRegistry) {
                 registry.addMapping("/**")
                     .allowedMethods("*")
-                    .allowedOriginPatterns("http://localhost:7070")
+                    .allowedOrigins("*")
                     .allowedHeaders("Authorization", "Content-Type", "x-requested-with", "X-XSRF-TOKEN")
-                    .allowCredentials(true)
+//                    .allowCredentials(true)
             }
         }
     }
@@ -43,7 +43,9 @@ class SecurityConfig {
 //                authorize("/swagger-ui/**", permitAll)
 //                authorize("/docs/**", permitAll)
 //                authorize("/swagger-ui.html", permitAll)
-                authorize("/**", permitAll)
+//                authorize("/**", permitAll)
+                authorize("/actuator/**", permitAll)
+                authorize(anyRequest, authenticated)
             }
             oauth2ResourceServer {
                 jwt {}

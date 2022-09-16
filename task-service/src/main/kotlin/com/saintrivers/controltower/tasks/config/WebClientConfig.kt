@@ -7,12 +7,15 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
-class WebClientConfig(val eurekaClient: EurekaClient) {
+class WebClientConfig(
+    val eurekaClient: EurekaClient
+) {
 
     @Bean("UserClient")
     @LoadBalanced
     fun keycloakClient(): WebClient = WebClient
         .builder()
         .baseUrl(eurekaClient.getNextServerFromEureka("user-service", false).homePageUrl)
+//        .baseUrl("lb:USER-SERVICE")
         .build()
 }
