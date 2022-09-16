@@ -108,6 +108,7 @@ services:
       SPRING_PROFILES_ACTIVE: default,prod
     ports:
       - "7070-7071:8080"
+    restart: on-failure
 
   task-service:
     <<: *jre-image
@@ -124,6 +125,7 @@ services:
       SPRING_PROFILES_ACTIVE: default,prod
     ports:
       - "7072-7073:8080"
+    restart: on-failure
 
   zipkin-server:
     image: openzipkin/zipkin
