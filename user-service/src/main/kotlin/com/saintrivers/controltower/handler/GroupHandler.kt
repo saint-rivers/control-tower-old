@@ -18,7 +18,7 @@ import java.util.*
 class GroupHandler(
     val groupService: GroupService
 ) {
-    fun getAuthenticationPrincipal(): Mono<Jwt> =
+    private fun getAuthenticationPrincipal(): Mono<Jwt> =
         ReactiveSecurityContextHolder.getContext()
             .map { it.authentication.principal }
             .cast(Jwt::class.java)
