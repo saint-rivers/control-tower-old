@@ -119,6 +119,12 @@ services:
   keycloak-client:
     <<: *jre-image
     <<: *actuator-healthcheck
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 20s
     depends_on:
       <<: *microservice-dependencies
     #    container_name: keycloak-client
