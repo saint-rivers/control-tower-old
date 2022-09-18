@@ -16,6 +16,7 @@ spring:
             - api-gateway
             - eureka-server
           default-label: main
+          ignore-local-ssh-settings: true
   application:
     name: config-server
 
