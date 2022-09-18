@@ -88,6 +88,9 @@ services:
     container_name: eureka-server
     volumes:
       - ./eureka-server/build/libs/eureka-server-1.0.1.jar:/opt/root.jar
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_CONFIG_IMPORT: "configserver:http://config-server:8080"
     ports:
       - "8761:8761"
     healthcheck:
@@ -138,7 +141,7 @@ services:
       <<: *docker-config-server
     ports:
       - "6070-6071:8080"
-#    restart: on-failure
+  #    restart: on-failure
 
   task-service:
     <<: *jre-image
@@ -156,7 +159,7 @@ services:
       <<: *docker-config-server
     ports:
       - "6072-6073:8080"
-#    restart: on-failure
+  #    restart: on-failure
 
   zipkin-server:
     image: openzipkin/zipkin
