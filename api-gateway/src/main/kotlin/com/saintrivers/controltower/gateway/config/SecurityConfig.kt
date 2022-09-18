@@ -19,10 +19,14 @@ class SecurityConfig {
     fun securityFilter(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http.invoke {
             authorizeExchange {
-                authorize("/api/v1/tasks/**", authenticated)
-                authorize("/api/v1/user-groups/**", authenticated)
-                authorize("/actuator/**", permitAll)
-                authorize(anyExchange, authenticated)
+//                authorize("/tasks/**", permitAll)
+//                authorize("/users/**", permitAll)
+//                authorize("/tasks/api/v1/tasks/**", authenticated)
+//                authorize("/users/api/v1/users/**", authenticated)
+//                authorize("/actuator/**", permitAll)
+//                authorize("/webjars/**", permitAll)
+//                authorize("/v3/api-docs/**", permitAll)
+                authorize(anyExchange, permitAll)
             }
             csrf { disable() }
             oauth2ResourceServer {
@@ -36,7 +40,7 @@ class SecurityConfig {
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf("*")
         configuration.allowedMethods = listOf("GET", "POST")
-        configuration.allowedHeaders = listOf("Authorization", "Content-Type", "x-requested-with", "X-XSRF-TOKEN")
+        configuration.allowedHeaders = listOf("Authorization", "Content-Type", "x-requested-with", "X-XSRF-TOKEN", "x-forwarded-host", "x-forwarded-proto")
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source
