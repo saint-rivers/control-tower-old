@@ -14,6 +14,7 @@ spring:
             - user-service
             - keycloak-client
             - api-gateway
+            - eureka-server
           default-label: main
   application:
     name: config-server
