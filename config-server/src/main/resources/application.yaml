@@ -1,9 +1,6 @@
-server:
-  port: 8888
-
 spring:
   profiles:
-    active: default
+    active: default,dev
   cloud:
     config:
       server:
@@ -18,18 +15,11 @@ spring:
             - keycloak-client
             - api-gateway
           default-label: main
-  security:
-    user:
-      name: root
-      password: tmpsecret
   application:
     name: config-server
-  zipkin:
-    base-url: http://localhost:9411/
-#    base-url: http://zipkin-server:9411/
 
 encrypt:
-  key: APODNU3093r2rbjzxcn09u213asdhy08WRFH
+  key: ${ENCRYPTION_KEY}
 
 management:
   endpoint:

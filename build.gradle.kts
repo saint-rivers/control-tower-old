@@ -59,5 +59,9 @@ subprojects {
         implementation("org.springframework.cloud:spring-cloud-starter-sleuth:3.1.3")
         implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin:3.1.3")
         implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+        if (project.name == "keycloak-client" || project.name == "user-service" || project.name == "task-service"){
+            implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.3")
+        }
     }
 }

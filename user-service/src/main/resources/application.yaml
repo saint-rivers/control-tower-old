@@ -1,12 +1,5 @@
 spring:
   application:
     name: user-service
-  profiles:
-    active: default,dev
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://auth.saintrivers.tech/auth/realms/control-tower
-          jwk-set-uri: https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/certs
-
+  config:
+    import: optional:configserver:http://localhost:8888
