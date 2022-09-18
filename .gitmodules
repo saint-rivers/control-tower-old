@@ -1,0 +1,3 @@
+[submodule "control-tower-config"]
+	path = control-tower-config
+	url = https://github.com/saint-rivers/control-tower-config.git
