@@ -60,12 +60,15 @@ subprojects {
         implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin:3.1.3")
         implementation("org.springframework.boot:spring-boot-starter-actuator")
 
-        if (project.name == "keycloak-client" || project.name == "user-service" || project.name == "task-service"){
+        if (project.name.contains("-client")
+            || project.name.contains("-service")
+            || project.name.contains("-server")
+            || project.name.contains("-gateway")
+        ) {
             implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.3")
         }
 
-        if (project.name.contains("service")){
-            println("only service dependency")
+        if (project.name.contains("service")) {
             val openapiVersion = "1.6.11"
             implementation("org.springdoc:springdoc-openapi-webflux-ui:$openapiVersion")
             implementation("org.springdoc:springdoc-openapi-kotlin:$openapiVersion")

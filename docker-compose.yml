@@ -23,13 +23,14 @@ x-postgres-config: &postgres-config
   restart: unless-stopped
 
 x-microservice-depends_on: &microservice-dependencies
-  depends_on:
-    #    config-server:
-    #      condition: service_healthy
-    eureka-server:
-      condition: service_healthy
+  zipkin-server:
+    condition: service_healthy
+  config-server:
+    condition: service_healthy
+  eureka-server:
+    condition: service_healthy
 
-x-default-configserver: &docker-config-server
+x-default-configserver: &config-client
   SPRING_PROFILES_ACTIVE: default,docker
   SPRING_CONFIG_IMPORT: "configserver:http://config-server:8080"
 
@@ -91,6 +92,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: native,docker
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8080"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
       - "8761:8761"
     healthcheck:
@@ -106,60 +110,53 @@ services:
     volumes:
       - ./api-gateway/build/libs/api-gateway-1.0.1.jar:/opt/root.jar
     depends_on:
-      eureka-server:
-        condition: service_healthy
+      <<: *microservice-dependencies
     environment:
-      SPRING_PROFILES_ACTIVE: default,docker
+      <<: *config-client
     ports:
       - "8080:8080"
 
   keycloak-client:
     <<: *jre-image
     <<: *actuator-healthcheck
-    <<: *microservice-dependencies
+    depends_on:
+      <<: *microservice-dependencies
     #    container_name: keycloak-client
     volumes:
       - ./keycloak-client/build/libs/keycloak-client-1.0.1.jar:/opt/root.jar
     environment:
-      <<: *docker-config-server
+      <<: *config-client
     ports:
       - "6068-6069:8080"
 
   user-service:
     <<: *jre-image
     <<: *actuator-healthcheck
-    <<: *microservice-dependencies
-    #    container_name: user-service
-    volumes:
-      - ./user-service/build/libs/user-service-1.0.1.jar:/opt/root.jar
     depends_on:
+      <<: *microservice-dependencies
       keycloak-client:
         condition: service_healthy
-      eureka-server:
-        condition: service_healthy
+    volumes:
+      - ./user-service/build/libs/user-service-1.0.1.jar:/opt/root.jar
     environment:
-      <<: *docker-config-server
+      <<: *config-client
     ports:
       - "6070-6071:8080"
-  #    restart: on-failure
 
   task-service:
     <<: *jre-image
     <<: *actuator-healthcheck
-    <<: *microservice-dependencies
     #    container_name: task-service
     volumes:
       - ./task-service/build/libs/task-service-1.0.1.jar:/opt/root.jar
     depends_on:
-      eureka-server:
-        condition: service_healthy
+      <<: *microservice-dependencies
       user-service:
         condition: service_healthy
     environment:
-      <<: *docker-config-server
+      <<: *config-client
     ports:
       - "6072-6073:8080"
-  #    restart: on-failure
 
   zipkin-server:
     image: openzipkin/zipkin

@@ -3,48 +3,5 @@ spring:
     name: api-gateway
   profiles:
     active: default,dev
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-      routes:
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/**
-          filters:
-            - RewritePath=/users/(?<path>.*), /$\{path}
-
-        - id: task-service
-          uri: lb://TASK-SERVICE
-          predicates:
-            - Path=/tasks/**
-          filters:
-            - RewritePath=/tasks/(?<path>.*), /$\{path}
-
-        - id: openapi
-          uri: http://localhost:${server.port}
-          predicates:
-            - Path=/v3/api-docs/**
-          filters:
-            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://auth.saintrivers.tech/auth/realms/control-tower
-          jwk-set-uri: https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/certs
-
-server:
-  forward-headers-strategy: framework
-  port: 8080
-
-springdoc:
-  swagger-ui:
-    urls:
-      - name: users
-        url: /v3/api-docs/users
-      - name: tasks
-        url: /v3/api-docs/tasks
+  config:
+    import: optional:configserver:http://localhost:8888
