@@ -89,7 +89,7 @@ services:
     volumes:
       - ./eureka-server/build/libs/eureka-server-1.0.1.jar:/opt/root.jar
     environment:
-      SPRING_PROFILES_ACTIVE: native
+      SPRING_PROFILES_ACTIVE: native,docker
       SPRING_CONFIG_IMPORT: "configserver:http://config-server:8080"
     ports:
       - "8761:8761"
