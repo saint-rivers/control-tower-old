@@ -44,12 +44,12 @@ services:
     <<: *jre-image
     <<: *actuator-healthcheck
     container_name: config-server
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 20s
+#    deploy:
+#      restart_policy:
+#        condition: on-failure
+#        delay: 3s
+#        max_attempts: 3
+#        window: 20s
     volumes:
       - ./config-server/build/libs/config-server-1.0.1.jar:/opt/root.jar
     environment:
