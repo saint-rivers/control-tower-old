@@ -1,14 +1,8 @@
-eureka:
-  client:
-    registerWithEureka: false
-    fetchRegistry: false
-  instance:
-    prefer-ip-address: true
+spring:
+  profiles:
+    active: native
+  config:
+    import: "optional:configserver:http://localhost:8888"
 
 server:
-  port: 8761
-
-management:
-  endpoint:
-    health:
-      enabled: true
+  port: 8741
