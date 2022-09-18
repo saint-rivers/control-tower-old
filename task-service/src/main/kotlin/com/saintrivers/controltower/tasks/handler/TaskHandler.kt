@@ -3,6 +3,7 @@ package com.saintrivers.controltower.tasks.handler
 import com.saintrivers.controltower.tasks.model.dto.TaskDto
 import com.saintrivers.controltower.tasks.model.request.TaskRequest
 import com.saintrivers.controltower.tasks.service.TaskService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
+@SecurityRequirement(name = "controlTowerOAuth")
 class TaskHandler(val taskService: TaskService) {
     fun getAuthenticationPrincipal(): Mono<Jwt> =
         ReactiveSecurityContextHolder.getContext()

@@ -1,5 +1,7 @@
 spring:
   application:
     name: task-service
+  profiles:
+    active: default,dev
   config:
     import: optional:configserver:http://localhost:8888

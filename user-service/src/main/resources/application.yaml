@@ -5,7 +5,3 @@ spring:
     active: default,dev
   config:
     import: optional:configserver:http://localhost:8888
-  security:
-    user:
-      name: root
-      password: admin

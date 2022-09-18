@@ -31,6 +31,8 @@ class SecurityConfig {
             authorizeExchange {
                 authorize("/api/v1/tasks/**", authenticated)
                 authorize("/actuator/**", permitAll)
+                authorize("/webjars/swagger-ui/**", permitAll)
+                authorize("/v3/api-docs/**", permitAll)
                 authorize(anyExchange, authenticated)
             }
             cors { }
