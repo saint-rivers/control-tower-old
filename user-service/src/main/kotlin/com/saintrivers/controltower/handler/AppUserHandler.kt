@@ -2,12 +2,14 @@ package com.saintrivers.controltower.handler
 
 import com.saintrivers.controltower.model.request.AppUserRequest
 import com.saintrivers.controltower.service.user.AppUserService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 
 @Component
+@SecurityRequirement(name = "controlTowerOAuth")
 class AppUserHandler(
     val appUserService: AppUserService
 ) {

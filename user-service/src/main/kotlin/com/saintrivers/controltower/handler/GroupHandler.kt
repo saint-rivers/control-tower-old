@@ -4,6 +4,7 @@ import com.saintrivers.controltower.exception.NotLoggedInException
 import com.saintrivers.controltower.model.request.GroupRequest
 import com.saintrivers.controltower.model.request.MemberRequest
 import com.saintrivers.controltower.service.group.GroupService
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Component
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
+@SecurityRequirement(name = "controlTowerOAuth")
 class GroupHandler(
     val groupService: GroupService
 ) {

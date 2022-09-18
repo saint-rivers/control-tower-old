@@ -161,6 +161,7 @@ services:
   zipkin-server:
     image: openzipkin/zipkin
     container_name: zipkin-server
+    restart: unless-stopped
     expose:
       - '9411'
     ports:

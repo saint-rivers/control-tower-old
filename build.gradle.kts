@@ -63,5 +63,13 @@ subprojects {
         if (project.name == "keycloak-client" || project.name == "user-service" || project.name == "task-service"){
             implementation("org.springframework.cloud:spring-cloud-starter-config:3.1.3")
         }
+
+        if (project.name.contains("service")){
+            println("only service dependency")
+            val openapiVersion = "1.6.11"
+            implementation("org.springdoc:springdoc-openapi-webflux-ui:$openapiVersion")
+            implementation("org.springdoc:springdoc-openapi-kotlin:$openapiVersion")
+            implementation("org.springdoc:springdoc-openapi-security:$openapiVersion")
+        }
     }
 }

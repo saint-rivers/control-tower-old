@@ -3,13 +3,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:3.1.4")
-    {
-        exclude("javax.ws.rs:jsr311-api")
-    }
-    implementation("org.jboss.resteasy:resteasy-client")
-    implementation("org.jboss.resteasy:resteasy-jackson2-provider")
-    implementation("org.jboss.resteasy:resteasy-multipart-provider")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:3.1.3")
+//    {
+//        exclude("javax.ws.rs:jsr311-api")
+//    }
+//    implementation("org.jboss.resteasy:resteasy-client:3.14.0.Final")
+//    implementation("org.jboss.resteasy:resteasy-jackson2-provider:3.14.0.Final")
+//    implementation("org.jboss.resteasy:resteasy-multipart-provider:3.14.0.Final")
 
     implementation("org.keycloak:keycloak-admin-client:16.1.1")
     implementation("org.keycloak:keycloak-spring-boot-starter:16.1.1")

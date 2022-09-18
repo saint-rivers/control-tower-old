@@ -29,10 +29,11 @@ class SecurityConfig {
     fun securityFilter(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http.invoke {
             authorizeExchange {
-//                authorize("/**", permitAll)
                 authorize("/api/v1/groups/**", authenticated)
                 authorize("/api/v1/users/**", authenticated)
                 authorize("/actuator/**", permitAll)
+                authorize("/webjars/**", permitAll)
+                authorize("/v3/api-docs/**", permitAll)
                 authorize(anyExchange, authenticated)
             }
             cors { }

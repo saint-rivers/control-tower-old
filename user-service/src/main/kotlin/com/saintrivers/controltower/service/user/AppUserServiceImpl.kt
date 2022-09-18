@@ -32,8 +32,10 @@ class AppUserServiceImpl(
                     it.tokenValue
                 }
                 .flatMap {
+                    val accessToken = it
                     keycloakClient.post()
                         .uri("/api/user")
+                        .header("Authorization", "Bearer $accessToken")
                         .body(Mono.just(req.toUserRequest()), UserRequest::class.java)
                         .retrieve()
                         .bodyToMono(AppUserDto::class.java)
