@@ -25,7 +25,6 @@ class SecurityConfig {
                     .allowedMethods("*")
                     .allowedOrigins("*")
                     .allowedHeaders("Authorization", "Content-Type", "x-requested-with", "X-XSRF-TOKEN")
-//                    .allowCredentials(true)
             }
         }
     }
@@ -40,9 +39,9 @@ class SecurityConfig {
 //                authorize("/api/role/**", authenticated)
 //                authorize("/api/group/**", authenticated)
 //                authorize("/actuator/**", permitAll)
-//                authorize("/swagger-ui/**", permitAll)
-//                authorize("/docs/**", permitAll)
-//                authorize("/swagger-ui.html", permitAll)
+                authorize("/swagger-ui/**", permitAll)
+                authorize("/docs/**", permitAll)
+                authorize("/swagger-ui.html", permitAll)
 //                authorize("/**", permitAll)
                 authorize("/actuator/**", permitAll)
                 authorize(anyRequest, authenticated)

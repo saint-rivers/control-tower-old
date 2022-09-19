@@ -28,14 +28,16 @@ class AppUserServiceImpl(
         val created =
             // throw error if email exists
             emailExists(req.email)
+                .log()
                 .flatMap { exists ->
                     if (exists) return@flatMap Mono.error(UserAlreadyExistsException())
                     else {
-                        // if not exists, unwrap accesss_token:
+                        // if not exists, unwrap access_token:
                         getAuthenticationPrincipal()
                             .map {
                                 it.tokenValue
                             }
+                            .log()
                             // send user creating request to admin client
                             .flatMap {
                                 val accessToken = it
@@ -45,10 +47,12 @@ class AppUserServiceImpl(
                                     .body(Mono.just(req.toUserRequest()), UserRequest::class.java)
                                     .retrieve()
                                     .bodyToMono(AppUserDto::class.java)
+                                    .onErrorResume { err ->
+                                        Mono.error(err)
+                                    }
                             }
                     }
                 }
-                .switchIfEmpty(Mono.error(UserAlreadyExistsException()))
                 .log()
 
         // map to an entity
