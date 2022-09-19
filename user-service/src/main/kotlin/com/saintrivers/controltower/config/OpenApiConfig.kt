@@ -26,9 +26,9 @@ import io.swagger.v3.oas.annotations.servers.Server
         clientCredentials = OAuthFlow(
             tokenUrl = "https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/token"
         ),
-        password = OAuthFlow(
-            tokenUrl = "https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/token",
-        )
+//        password = OAuthFlow(
+//            tokenUrl = "https://auth.saintrivers.tech/auth/realms/control-tower/protocol/openid-connect/token",
+//        )
     )
 )
 class OpenApiConfig

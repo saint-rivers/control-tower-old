@@ -26,14 +26,17 @@ class AppUserServiceImpl(
 
     override fun registerUser(req: AppUserRequest): Mono<AppUserDto> {
         val created =
+            // throw error if email exists
             emailExists(req.email)
                 .flatMap { exists ->
                     if (exists) return@flatMap Mono.error(UserAlreadyExistsException())
                     else {
+                        // if not exists, unwrap accesss_token:
                         getAuthenticationPrincipal()
                             .map {
                                 it.tokenValue
                             }
+                            // send user creating request to admin client
                             .flatMap {
                                 val accessToken = it
                                 keycloakClient.post()
