@@ -1,8 +1,8 @@
 package com.saintrivers.controltower.service.group
 
-import com.saintrivers.controltower.common.exception.MemberAlreadyAddedException
-import com.saintrivers.controltower.common.exception.NoContentException
-import com.saintrivers.controltower.common.exception.NotLoggedInException
+import com.saintrivers.controltower.common.exception.user.MemberAlreadyAddedException
+import com.saintrivers.controltower.common.exception.content.NoContentException
+import com.saintrivers.controltower.common.exception.user.NotLoggedInException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest

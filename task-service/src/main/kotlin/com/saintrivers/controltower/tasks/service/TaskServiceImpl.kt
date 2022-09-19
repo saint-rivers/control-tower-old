@@ -1,6 +1,6 @@
 package com.saintrivers.controltower.tasks.service
 
-import com.saintrivers.controltower.common.exception.NotResourceOwnerException
+import com.saintrivers.controltower.common.exception.user.NotResourceOwnerException
 import com.saintrivers.controltower.common.model.AppUser
 import com.saintrivers.controltower.tasks.exception.TaskNotFoundException
 import com.saintrivers.controltower.tasks.model.dto.TaskDto
