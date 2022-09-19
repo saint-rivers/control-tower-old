@@ -6,7 +6,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient
 
 @SpringBootApplication
 @EnableEurekaClient
-//@RefreshScope
 class KeycloakClientApplication
 
 fun main(args: Array<String>) {

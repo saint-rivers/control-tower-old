@@ -8,6 +8,5 @@ dependencies {
 
     runtimeOnly("org.postgresql:r2dbc-postgresql")
     testImplementation("io.projectreactor:reactor-test")
-
     implementation(project(":common"))
 }

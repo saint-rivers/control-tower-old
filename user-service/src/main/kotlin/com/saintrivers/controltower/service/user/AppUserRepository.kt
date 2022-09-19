@@ -12,4 +12,6 @@ interface AppUserRepository : ReactiveCrudRepository<AppUser, Long> {
 
     @Query("select id from app_users where auth_id = :authId")
     fun findIdByAuthId(authId: UUID): Mono<Long>
+
+    fun findByEmail(email: Mono<String>): Mono<AppUser>
 }

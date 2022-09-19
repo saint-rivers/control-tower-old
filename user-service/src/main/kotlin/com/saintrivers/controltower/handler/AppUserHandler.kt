@@ -28,6 +28,10 @@ class AppUserHandler(
             .flatMap {
                 ServerResponse.ok().bodyValue(it)
             }
+            .onErrorResume {
+                ServerResponse.badRequest().bodyValue(mapOf("message" to it.localizedMessage))
+            }
     }
+
 
 }
