@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.keycloak.group
+package com.saintrivers.controltower.keycloak.service.group
 
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.GroupRepresentation

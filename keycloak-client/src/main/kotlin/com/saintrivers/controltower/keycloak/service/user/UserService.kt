@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.keycloak.user
+package com.saintrivers.controltower.keycloak.service.user
 
 import com.saintrivers.controltower.common.model.AppUser
 import com.saintrivers.controltower.common.model.UserRequest
@@ -64,6 +64,13 @@ class UserService(
             .roles()
             .realmLevel()
             .add(listOf(roleRepresentation))
+    }
+
+    fun delete(userId: String): Response {
+        return keycloak
+            .realm(realm)
+            .users()
+            .delete(userId)
     }
 
     fun create(request: UserRequest): Response {

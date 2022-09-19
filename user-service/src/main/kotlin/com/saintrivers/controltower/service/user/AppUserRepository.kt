@@ -15,4 +15,7 @@ interface AppUserRepository : ReactiveCrudRepository<AppUser, Long> {
 
     @Query("select exists (select 1 from user_db.public.app_users where email = :email)")
     fun findByEmail(email: String): Mono<Boolean>
+
+    @Query("delete from app_users where auth_id = :authId")
+    fun deleteByAuthId(authId: UUID): Mono<Void>
 }

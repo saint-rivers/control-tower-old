@@ -8,4 +8,6 @@ interface AppUserService {
 
     fun registerUser(req: AppUserRequest): Mono<AppUserDto>
     fun findById(id: String): Mono<AppUserDto>
+    fun deleteUser(id: String): Mono<Void>
+    fun updateUser(id: String, req: AppUserRequest): Mono<AppUserDto>
 }

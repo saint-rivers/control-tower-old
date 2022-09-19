@@ -1,6 +1,6 @@
 package com.saintrivers.controltower.keycloak.controller
 
-import com.saintrivers.controltower.keycloak.group.GroupService
+import com.saintrivers.controltower.keycloak.service.group.GroupService
 import org.springframework.web.bind.annotation.*
 
 @RestController

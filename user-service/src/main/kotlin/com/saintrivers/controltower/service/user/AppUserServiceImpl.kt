@@ -1,8 +1,10 @@
 package com.saintrivers.controltower.service.user
 
 import com.saintrivers.controltower.common.model.UserRequest
+import com.saintrivers.controltower.exception.NotResourceOwnerException
 import com.saintrivers.controltower.exception.UserAlreadyExistsException
 import com.saintrivers.controltower.model.dto.AppUserDto
+import com.saintrivers.controltower.model.entity.AppUser
 import com.saintrivers.controltower.model.request.AppUserRequest
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
@@ -64,8 +66,44 @@ class AppUserServiceImpl(
     private fun emailExists(email: String): Mono<Boolean> =
         appUserRepository.findByEmail(email)
 
-    override fun findById(id: String): Mono<AppUserDto> =
-        appUserRepository.findByAuthId(UUID.fromString(id))
+    override fun findById(id: String): Mono<AppUserDto> {
+        println(id)
+        return appUserRepository.findByAuthId(UUID.fromString(id))
             .map { it.toDto() }
+    }
+
+    override fun deleteUser(id: String): Mono<Void> =
+        checkResourceOwnerThen<Void>(id) {
+            getAuthenticationPrincipal()
+                .map { jwt ->
+                    jwt.tokenValue
+                }
+                .flatMap { token ->
+                    keycloakClient.delete()
+                        .uri("/api/user/{id}", id)
+                        .header("Authorization", "Bearer $token")
+                        .retrieve()
+                        .bodyToMono(UUID::class.java)
+                }
+                .flatMap {
+                    appUserRepository.deleteByAuthId(it)
+                }
+                .log()
+        }.then()
+
+    override fun updateUser(id: String, req: AppUserRequest): Mono<AppUserDto> =
+        checkResourceOwnerThen<AppUser>(id) { appUserRepository.save(req.toEntity()) }
+            .map { it.toDto() }
+
+    private fun <R> checkResourceOwnerThen(id: String, afterValidation: (AppUser) -> Mono<out R>): Mono<R> =
+        appUserRepository.findByAuthId(UUID.fromString(id)).zipWith(getAuthenticationPrincipal())
+            .flatMap {
+                if (it.t1.authId.toString() == it.t2.claims["sub"].toString())
+                // is source owner
+                    afterValidation(it.t1)
+                else
+                // is not resource owner
+                    Mono.error(NotResourceOwnerException())
+            }
 
 }

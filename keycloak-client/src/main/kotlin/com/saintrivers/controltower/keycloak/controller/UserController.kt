@@ -2,10 +2,11 @@ package com.saintrivers.controltower.keycloak.controller
 
 import com.saintrivers.controltower.common.model.AppUser
 import com.saintrivers.controltower.common.model.UserRequest
-import com.saintrivers.controltower.keycloak.role.RoleService
-import com.saintrivers.controltower.keycloak.user.UserService
+import com.saintrivers.controltower.keycloak.service.role.RoleService
+import com.saintrivers.controltower.keycloak.service.user.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api/user")
@@ -20,6 +21,12 @@ class UserController(
     @GetMapping("/{id}")
     fun findById(@PathVariable id: String): AppUser {
         return userService.findById(id)
+    }
+
+    @DeleteMapping("/{id}")
+    fun deleteById(@PathVariable id: String): ResponseEntity<UUID> {
+        userService.delete(id)
+        return ResponseEntity.accepted().body(UUID.fromString(id))
     }
 
     @GetMapping("/username/{username}")

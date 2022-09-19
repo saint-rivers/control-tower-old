@@ -19,6 +19,8 @@ class ApiRouter(val appUserHandler: AppUserHandler, val groupHandler: GroupHandl
         "/api/v1".nest {
             POST("/users", appUserHandler::registerUser)
             GET("/users/{id}", appUserHandler::findUserById)
+            PUT("/users/{id}", appUserHandler::updateUser)
+            DELETE("/users/{id}", appUserHandler::deleteUser)
         }
     }
 

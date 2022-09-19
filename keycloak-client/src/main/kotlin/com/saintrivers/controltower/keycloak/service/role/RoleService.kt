@@ -1,4 +1,4 @@
-package com.saintrivers.controltower.keycloak.role
+package com.saintrivers.controltower.keycloak.service.role
 
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.RoleRepresentation

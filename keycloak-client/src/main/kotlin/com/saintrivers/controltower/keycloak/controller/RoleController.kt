@@ -1,6 +1,6 @@
 package com.saintrivers.controltower.keycloak.controller
 
-import com.saintrivers.controltower.keycloak.role.RoleService
+import com.saintrivers.controltower.keycloak.service.role.RoleService
 import org.springframework.web.bind.annotation.*
 
 @RestController
