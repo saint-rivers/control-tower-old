@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.servers.Server
 )
 @SecurityScheme(
     name = "controlTowerOAuth",
-    scheme = "oauth2",
     type = SecuritySchemeType.OAUTH2,
     `in` = SecuritySchemeIn.HEADER,
     flows = OAuthFlows(

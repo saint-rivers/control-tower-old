@@ -2,7 +2,6 @@ package com.saintrivers.controltower.service.group
 
 import com.saintrivers.controltower.common.exception.user.MemberAlreadyAddedException
 import com.saintrivers.controltower.common.exception.content.NoContentException
-import com.saintrivers.controltower.common.exception.user.NotLoggedInException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest
@@ -63,16 +62,24 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
     }
 
     override fun findGroupsOfLoggedInUser(): Flux<GroupDto> {
-        return getAuthenticationPrincipal()
+
+        val uuid = getAuthenticationPrincipal().map { it.getSub() }
+        val emailMono: Mono<String> = getAuthenticationPrincipal().map { it.claims["email"].toString() }
+
+        return emailMono
+            .log()
+            .flatMap { uuid }
             .flatMap {
-                val uuid = it.getSub()
-                appUserRepository.findIdByAuthId(uuid)
+                appUserRepository.findIdByAuthId(it)
             }
-            .switchIfEmpty(Mono.error(NotLoggedInException()))
+            .log()
             .flatMapMany {
                 groupRepository.findAllGroupsByMemberId(it)
             }
             .switchIfEmpty(Mono.error(NoContentException()))
+//            .onErrorResume {
+//                Mono.error(mapOf("message" to it.localizedMessage))
+//            }
             .map {
                 it.toDto()
             }
