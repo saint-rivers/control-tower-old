@@ -58,29 +58,29 @@ import org.springframework.web.bind.annotation.RequestMethod
                 )]
             )
         ),
-        RouterOperation(
-            path = "/api/v1/users/{id}",
-            method = [RequestMethod.PUT],
-            produces = [MediaType.APPLICATION_JSON_VALUE],
-            beanClass = AppUserHandler::class,
-            beanMethod = "updateUser",
-            operation = Operation(
-                operationId = "updateUser",
-                parameters = [
-                    Parameter(
-                        name = "id",
-                        `in` = ParameterIn.PATH,
-                        style = ParameterStyle.SIMPLE,
-                        explode = Explode.FALSE,
-                        required = true,
-                    )
-                ],
-                requestBody = RequestBody(content = [Content(schema = Schema(implementation = AppUserRequest::class))]),
-                responses = [ApiResponse(
-                    content = [Content(schema = Schema(implementation = AppUserDto::class))]
-                )]
-            )
-        ),
+//        RouterOperation(
+//            path = "/api/v1/users/{id}",
+//            method = [RequestMethod.PUT],
+//            produces = [MediaType.APPLICATION_JSON_VALUE],
+//            beanClass = AppUserHandler::class,
+//            beanMethod = "updateUser",
+//            operation = Operation(
+//                operationId = "updateUser",
+//                parameters = [
+//                    Parameter(
+//                        name = "id",
+//                        `in` = ParameterIn.PATH,
+//                        style = ParameterStyle.SIMPLE,
+//                        explode = Explode.FALSE,
+//                        required = true,
+//                    )
+//                ],
+//                requestBody = RequestBody(content = [Content(schema = Schema(implementation = AppUserRequest::class))]),
+//                responses = [ApiResponse(
+//                    content = [Content(schema = Schema(implementation = AppUserDto::class))]
+//                )]
+//            )
+//        ),
         RouterOperation(
             path = "/api/v1/users/{id}",
             method = [RequestMethod.DELETE],

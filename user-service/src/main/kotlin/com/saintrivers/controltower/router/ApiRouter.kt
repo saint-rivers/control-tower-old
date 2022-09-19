@@ -28,6 +28,7 @@ class ApiRouter(val appUserHandler: AppUserHandler, val groupHandler: GroupHandl
     @GroupRouterOperations
     fun groupRouter(): RouterFunction<ServerResponse> = router {
         "/api/v1".nest {
+            GET("/groups/{id}/users", groupHandler::findAllGroupMembers)
             POST("/groups", groupHandler::createGroup)
             POST("/groups/members", groupHandler::addGroupMember)
         }
