@@ -52,8 +52,7 @@ services:
       SPRING_PROFILES_ACTIVE: default,docker
     restart: unless-stopped
     env_file:
-      - github.env
-      - encrypt.env
+      - .env
     ports:
       - "8888:8080"
 
