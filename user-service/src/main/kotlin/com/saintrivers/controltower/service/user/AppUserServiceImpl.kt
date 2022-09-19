@@ -1,6 +1,7 @@
 package com.saintrivers.controltower.service.user
 
 import com.saintrivers.controltower.common.model.UserRequest
+import com.saintrivers.controltower.exception.AccountAlreadyDisabledException
 import com.saintrivers.controltower.exception.NotResourceOwnerException
 import com.saintrivers.controltower.exception.UserAlreadyExistsException
 import com.saintrivers.controltower.model.dto.AppUserDto
@@ -59,6 +60,7 @@ class AppUserServiceImpl(
             userEntity.createdDate = LocalDateTime.now()
             userEntity.lastModified = userEntity.createdDate
             userEntity.authId = user.id
+            userEntity.isEnabled = true
             appUserRepository.save(userEntity).map { it.toDto() }
         }
     }
@@ -86,7 +88,17 @@ class AppUserServiceImpl(
                         .bodyToMono(UUID::class.java)
                 }
                 .flatMap {
-                    appUserRepository.deleteByAuthId(it)
+                    appUserRepository.findByAuthId(it)
+                }
+                .flatMap {
+                    if (it.isEnabled) {
+                        it.isEnabled = false
+                        appUserRepository
+                            .save(it)
+                            .flatMap {
+                                Mono.empty<Void>()
+                            }
+                    } else Mono.error(AccountAlreadyDisabledException())
                 }
                 .log()
         }.then()

@@ -40,6 +40,9 @@ class AppUser(
     @Column("last_modified")
     @LastModifiedDate
     var lastModified: LocalDateTime? = null,
+
+    @Column("is_enabled")
+    var isEnabled: Boolean = false,
 )  {
 
     fun toDto() = AppUserDto(
@@ -50,6 +53,7 @@ class AppUser(
         lastName = lastName!!,
         profileImage = profileImage!!,
         createdDate = createdDate!!,
-        lastModified = lastModified!!
+        lastModified = lastModified!!,
+        isEnabled = isEnabled
     )
 }

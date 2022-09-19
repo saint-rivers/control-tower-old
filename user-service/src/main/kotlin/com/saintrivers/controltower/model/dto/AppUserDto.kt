@@ -17,5 +17,6 @@ data class AppUserDto(
     val createdDate: LocalDateTime? = null,
     @LastModifiedDate
     val lastModified: LocalDateTime? = null,
+    val isEnabled: Boolean
 )
 

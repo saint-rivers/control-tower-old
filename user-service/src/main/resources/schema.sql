@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS app_users
     last_name     varchar(255) not null,
     profile_image text         not null,
     created_date  timestamp    not null,
-    last_modified timestamp    not null
+    last_modified timestamp    not null,
+    is_enabled    bool         not null default false
 );
 
 CREATE TABLE IF NOT EXISTS groups
