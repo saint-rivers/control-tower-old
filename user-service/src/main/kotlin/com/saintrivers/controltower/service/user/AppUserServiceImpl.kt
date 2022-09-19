@@ -1,9 +1,9 @@
 package com.saintrivers.controltower.service.user
 
 import com.saintrivers.controltower.common.model.UserRequest
-import com.saintrivers.controltower.exception.AccountAlreadyDisabledException
-import com.saintrivers.controltower.exception.NotResourceOwnerException
-import com.saintrivers.controltower.exception.UserAlreadyExistsException
+import com.saintrivers.controltower.common.exception.AccountAlreadyDisabledException
+import com.saintrivers.controltower.common.exception.NotResourceOwnerException
+import com.saintrivers.controltower.common.exception.UserAlreadyExistsException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.entity.AppUser
 import com.saintrivers.controltower.model.request.AppUserRequest

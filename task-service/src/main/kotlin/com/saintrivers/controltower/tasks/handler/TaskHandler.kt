@@ -21,11 +21,14 @@ class TaskHandler(val taskService: TaskService) {
             .cast(Jwt::class.java)
 
     fun findTasksOfUserInGroup(req: ServerRequest): Mono<ServerResponse> {
-        val groupId = UUID.fromString(req.queryParam("group").get())
-        val userId = UUID.fromString(req.queryParam("user").get())
+        val groupId = UUID.fromString(req.pathVariable("id"))
+        val userIdRequest = req.queryParam("user")
 
-        return ServerResponse.ok().body(
-            taskService.getTasksOfUserInGroup(groupId, userId),
+        return if (userIdRequest.isPresent) ServerResponse.ok().body(
+            taskService.getTasksOfUserInGroup(groupId, UUID.fromString(userIdRequest.get())),
+            TaskDto::class.java
+        ) else ServerResponse.ok().body(
+            taskService.getAllTasksInGroup(groupId),
             TaskDto::class.java
         )
     }
@@ -41,5 +44,13 @@ class TaskHandler(val taskService: TaskService) {
             }
             .onErrorResume {
                 ServerResponse.badRequest().bodyValue(mapOf("message" to it.localizedMessage))
+            }
+
+    fun deleteTask(req: ServerRequest): Mono<ServerResponse> =
+        taskService.removeTask(UUID.fromString(req.pathVariable("id")))
+            .flatMap { ServerResponse.accepted().build() }
+            .onErrorResume {
+                val error = Mono.just(mapOf("message" to it.localizedMessage))
+                ServerResponse.badRequest().body(error, UUID::class.java)
             }
 }

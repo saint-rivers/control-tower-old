@@ -1,6 +1,6 @@
 package com.saintrivers.controltower.service.group
 
-import com.saintrivers.controltower.exception.MemberAlreadyAddedException
+import com.saintrivers.controltower.common.exception.MemberAlreadyAddedException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest

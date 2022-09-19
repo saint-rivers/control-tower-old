@@ -9,6 +9,7 @@ import java.util.UUID
 interface TaskService {
 
     fun createTask(taskRequest: TaskRequest, requester: UUID): Mono<TaskDto>
-
     fun getTasksOfUserInGroup(groupId: UUID, userId: UUID): Flux<TaskDto>
+    fun getAllTasksInGroup(groupId: UUID): Flux<TaskDto>
+    fun removeTask(taskId: UUID): Mono<Void>
 }

@@ -1,6 +1,6 @@
 package com.saintrivers.controltower.handler
 
-import com.saintrivers.controltower.exception.NotLoggedInException
+import com.saintrivers.controltower.common.exception.NotLoggedInException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.request.GroupRequest
 import com.saintrivers.controltower.model.request.MemberRequest

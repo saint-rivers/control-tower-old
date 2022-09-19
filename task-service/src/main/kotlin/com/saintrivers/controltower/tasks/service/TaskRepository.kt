@@ -14,4 +14,6 @@ interface TaskRepository : ReactiveCrudRepository<Task, UUID> {
 
     @Query("select * from tasks where group_id = :groupId and assigned_to = :assignedTo")
     fun findAllByGroupIdAndAssignedTo(groupId: UUID, assignedTo: UUID): Flux<Task>
+
+    fun findAllByGroupId(groupId: UUID): Flux<Task>
 }

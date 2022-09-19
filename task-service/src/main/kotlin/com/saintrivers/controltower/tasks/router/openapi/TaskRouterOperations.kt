@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 @RouterOperations(
     value = [
         RouterOperation(
-            path = "/api/v1/tasks",
+            path = "/api/v1/tasks/group/{id}",
             method = [RequestMethod.GET],
             produces = [MediaType.APPLICATION_JSON_VALUE],
             beanClass = TaskHandler::class,
@@ -32,22 +32,46 @@ import org.springframework.web.bind.annotation.RequestMethod
                 operationId = "findTasksOfUserInGroup",
                 parameters = [
                     Parameter(
-                        name = "group",
-                        `in` = ParameterIn.QUERY,
+                        name = "id",
+                        `in` = ParameterIn.PATH,
                         required = true,
                         explode = Explode.FALSE,
                         style = ParameterStyle.SIMPLE,
+                        description = "Required to get tasks of each group",
                     ),
                     Parameter(
                         name = "user",
                         `in` = ParameterIn.QUERY,
-                        required = true,
+                        required = false,
                         explode = Explode.FALSE,
                         style = ParameterStyle.SIMPLE,
+                        description = "Not required but can be used to filter for users of a group's task",
                     )
                 ],
                 responses = [ApiResponse(
                     content = [Content(array = ArraySchema(schema = Schema(implementation = TaskDto::class)))]
+                )]
+            )
+        ),
+        RouterOperation(
+            path = "/api/v1/tasks/{id}",
+            method = [RequestMethod.DELETE],
+            produces = [MediaType.APPLICATION_JSON_VALUE],
+            beanClass = TaskHandler::class,
+            beanMethod = "deleteTask",
+            operation = Operation(
+                operationId = "deleteTask",
+                parameters = [
+                    Parameter(
+                        name = "id",
+                        `in` = ParameterIn.PATH,
+                        required = true,
+                        explode = Explode.FALSE,
+                        style = ParameterStyle.SIMPLE,
+                    ),
+                ],
+                responses = [ApiResponse(
+                    responseCode = "202"
                 )]
             )
         ),

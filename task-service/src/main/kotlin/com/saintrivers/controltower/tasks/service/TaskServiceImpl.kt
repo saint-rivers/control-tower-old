@@ -1,6 +1,8 @@
 package com.saintrivers.controltower.tasks.service
 
+import com.saintrivers.controltower.common.exception.NotResourceOwnerException
 import com.saintrivers.controltower.common.model.AppUser
+import com.saintrivers.controltower.tasks.exception.TaskNotFoundException
 import com.saintrivers.controltower.tasks.model.dto.TaskDto
 import com.saintrivers.controltower.tasks.model.entity.Task
 import com.saintrivers.controltower.tasks.model.request.TaskRequest
@@ -59,7 +61,6 @@ class TaskServiceImpl(
     fun Mono<TaskDto>.fetchAndZipRelatedUsers(entity: Task): Mono<TaskDto> {
         val createdBy = fetchUser(entity.createdBy!!)
         val assignedTo = fetchUser(entity.assignedTo!!)
-
         return this
             .zipWith(createdBy).map {
                 it.t1.createdBy = it.t2
@@ -88,6 +89,30 @@ class TaskServiceImpl(
                         Task(createdBy = it.t2.createdBy, assignedTo = it.t2.assignedTo)
                     )
             }
+    }
+
+    override fun getAllTasksInGroup(groupId: UUID): Flux<TaskDto> {
+        return taskRepository.findAllByGroupId(groupId)
+            .flatMap {
+                val dto = it.toDto()
+                Mono.just(dto).fetchAndZipRelatedUsers(
+                    Task(createdBy = it.createdBy, assignedTo = it.assignedTo)
+                )
+            }
+            .log()
+    }
+
+    override fun removeTask(taskId: UUID): Mono<Void> {
+        return taskRepository.findById(taskId)
+            .switchIfEmpty(Mono.error(TaskNotFoundException()))
+            .flatMap { task ->
+                getAuthenticationPrincipal().flatMap {
+                    if (it.claims["sub"].toString() == task.createdBy.toString())
+                        taskRepository.delete(task)
+                    else Mono.error(NotResourceOwnerException())
+                }
+            }
+
     }
 
 
