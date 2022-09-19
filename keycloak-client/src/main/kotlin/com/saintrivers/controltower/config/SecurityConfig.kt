@@ -35,14 +35,12 @@ class SecurityConfig {
             cors {}
             csrf { disable() }
             authorizeRequests {
-//                authorize("/api/user/**", authenticated)
-//                authorize("/api/role/**", authenticated)
-//                authorize("/api/group/**", authenticated)
-//                authorize("/actuator/**", permitAll)
+                authorize("/api/user/**", authenticated)
+                authorize("/api/role/**", authenticated)
+                authorize("/api/group/**", authenticated)
                 authorize("/swagger-ui/**", permitAll)
-                authorize("/docs/**", permitAll)
+                authorize("/v3/api-docs/**", permitAll)
                 authorize("/swagger-ui.html", permitAll)
-//                authorize("/**", permitAll)
                 authorize("/actuator/**", permitAll)
                 authorize(anyRequest, authenticated)
             }

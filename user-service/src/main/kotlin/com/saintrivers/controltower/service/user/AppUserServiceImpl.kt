@@ -25,19 +25,17 @@ class AppUserServiceImpl(
             .cast(Jwt::class.java)
 
     override fun registerUser(req: AppUserRequest): Mono<AppUserDto> {
-        val created =
+        val created: Mono<AppUserDto> =
             // throw error if email exists
             emailExists(req.email)
-                .log()
                 .flatMap { exists ->
                     if (exists) return@flatMap Mono.error(UserAlreadyExistsException())
                     else {
                         // if not exists, unwrap access_token:
-                        getAuthenticationPrincipal()
+                        return@flatMap getAuthenticationPrincipal()
                             .map {
                                 it.tokenValue
                             }
-                            .log()
                             // send user creating request to admin client
                             .flatMap {
                                 val accessToken = it
@@ -47,13 +45,9 @@ class AppUserServiceImpl(
                                     .body(Mono.just(req.toUserRequest()), UserRequest::class.java)
                                     .retrieve()
                                     .bodyToMono(AppUserDto::class.java)
-                                    .onErrorResume { err ->
-                                        Mono.error(err)
-                                    }
                             }
                     }
                 }
-                .log()
 
         // map to an entity
         val userEntity = req.toEntity()
@@ -68,8 +62,7 @@ class AppUserServiceImpl(
     }
 
     private fun emailExists(email: String): Mono<Boolean> =
-        appUserRepository.findByEmail(Mono.just(email))
-            .mapNotNull { it.email != null }
+        appUserRepository.findByEmail(email)
 
     override fun findById(id: String): Mono<AppUserDto> =
         appUserRepository.findByAuthId(UUID.fromString(id))
