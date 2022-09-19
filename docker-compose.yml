@@ -44,18 +44,13 @@ services:
     <<: *jre-image
     <<: *actuator-healthcheck
     container_name: config-server
-#    deploy:
-#      restart_policy:
-#        condition: on-failure
-#        delay: 3s
-#        max_attempts: 3
-#        window: 20s
     depends_on:
       - zipkin-server
     volumes:
       - ./config-server/build/libs/config-server-1.0.1.jar:/opt/root.jar
     environment:
       SPRING_PROFILES_ACTIVE: default,docker
+    restart: unless-stopped
     env_file:
       - github.env
       - encrypt.env
@@ -150,6 +145,7 @@ services:
       <<: *config-client
     ports:
       - "6070-6071:8080"
+    restart: on-failure
 
   task-service:
     <<: *jre-image
@@ -165,6 +161,7 @@ services:
       <<: *config-client
     ports:
       - "6072-6073:8080"
+    restart: on-failure
 
   zipkin-server:
     image: openzipkin/zipkin
