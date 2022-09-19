@@ -30,6 +30,7 @@ class ApiRouter(val appUserHandler: AppUserHandler, val groupHandler: GroupHandl
         "/api/v1".nest {
             GET("/groups/{id}/users", groupHandler::findAllGroupMembers)
             POST("/groups", groupHandler::createGroup)
+            GET("/groups", groupHandler::findGroupsOfLoggedInUser)
             POST("/groups/members", groupHandler::addGroupMember)
         }
     }

@@ -49,6 +49,19 @@ import java.util.*
         ),
         RouterOperation(
             path = "/api/v1/groups",
+            method = [RequestMethod.GET],
+            produces = [MediaType.APPLICATION_JSON_VALUE],
+            beanClass = GroupHandler::class,
+            beanMethod = "findGroupsOfLoggedInUser",
+            operation = Operation(
+                operationId = "findGroupsOfLoggedInUser",
+                responses = [ApiResponse(
+                    content = [Content(array = ArraySchema(schema = Schema(implementation = AppUserDto::class)))]
+                )]
+            )
+        ),
+        RouterOperation(
+            path = "/api/v1/groups",
             method = [RequestMethod.POST],
             produces = [MediaType.APPLICATION_JSON_VALUE],
             beanClass = GroupHandler::class,

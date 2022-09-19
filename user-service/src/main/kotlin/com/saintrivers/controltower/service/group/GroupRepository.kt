@@ -18,4 +18,12 @@ interface GroupRepository : ReactiveCrudRepository<Group, UUID> {
 
     @Query("select au.* from group_members gm inner join app_users au on au.id = gm.user_id where gm.group_id = :groupId")
     fun findAllByGroupId(groupId: UUID): Flux<AppUser>
+
+    @Query(
+        "select g.* from group_members gm " +
+                "inner join groups g " +
+                "on g.id = gm.group_id " +
+                "where gm.user_id = :userId"
+    )
+    fun findAllGroupsByMemberId(userId: Long): Flux<Group>
 }

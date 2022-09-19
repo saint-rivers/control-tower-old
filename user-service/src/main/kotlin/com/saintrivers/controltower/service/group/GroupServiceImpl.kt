@@ -1,11 +1,15 @@
 package com.saintrivers.controltower.service.group
 
 import com.saintrivers.controltower.common.exception.MemberAlreadyAddedException
+import com.saintrivers.controltower.common.exception.NoContentException
+import com.saintrivers.controltower.common.exception.NotLoggedInException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest
 import com.saintrivers.controltower.model.request.MemberRequest
 import com.saintrivers.controltower.service.user.AppUserRepository
+import org.springframework.security.core.context.ReactiveSecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -15,10 +19,12 @@ import java.util.*
 @Service
 class GroupServiceImpl(val groupRepository: GroupRepository, val appUserRepository: AppUserRepository) : GroupService {
 
-//    private fun getAuthenticationPrincipal(): Mono<Jwt> =
-//        ReactiveSecurityContextHolder.getContext()
-//            .map { it.authentication.principal }
-//            .cast(Jwt::class.java)
+    fun Jwt.getSub(): UUID = UUID.fromString(this.claims["sub"].toString())
+
+    private fun getAuthenticationPrincipal(): Mono<Jwt> =
+        ReactiveSecurityContextHolder.getContext()
+            .map { it.authentication.principal }
+            .cast(Jwt::class.java)
 
     override fun create(groupRequest: GroupRequest): Mono<GroupDto> {
         val entity = groupRequest.toEntity()
@@ -54,6 +60,22 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
 
     override fun getMembersByGroupId(groupId: UUID): Flux<AppUserDto> {
         return groupRepository.findAllByGroupId(groupId).map { it.toDto() }
+    }
+
+    override fun findGroupsOfLoggedInUser(): Flux<GroupDto> {
+        return getAuthenticationPrincipal()
+            .flatMap {
+                val uuid = it.getSub()
+                appUserRepository.findIdByAuthId(uuid)
+            }
+            .switchIfEmpty(Mono.error(NotLoggedInException()))
+            .flatMapMany {
+                groupRepository.findAllGroupsByMemberId(it)
+            }
+            .switchIfEmpty(Mono.error(NoContentException()))
+            .map {
+                it.toDto()
+            }
     }
 
 

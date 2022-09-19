@@ -13,4 +13,5 @@ interface GroupService {
     fun create(groupRequest: GroupRequest): Mono<GroupDto>
     fun addMember(memberRequest: MemberRequest, requesterId: UUID): Mono<UUID>
     fun getMembersByGroupId(groupId: UUID): Flux<AppUserDto>
+    fun findGroupsOfLoggedInUser(): Flux<GroupDto>
 }

@@ -2,6 +2,7 @@ package com.saintrivers.controltower.handler
 
 import com.saintrivers.controltower.common.exception.NotLoggedInException
 import com.saintrivers.controltower.model.dto.AppUserDto
+import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest
 import com.saintrivers.controltower.model.request.MemberRequest
 import com.saintrivers.controltower.service.group.GroupService
@@ -29,6 +30,12 @@ class GroupHandler(
         ServerResponse.ok().body(
             groupService.getMembersByGroupId(UUID.fromString(req.pathVariable("id"))),
             AppUserDto::class.java
+        )
+
+    fun findGroupsOfLoggedInUser(req: ServerRequest): Mono<ServerResponse> =
+        ServerResponse.ok().body(
+            groupService.findGroupsOfLoggedInUser(),
+            GroupDto::class.java
         )
 
     fun createGroup(req: ServerRequest): Mono<ServerResponse> =
