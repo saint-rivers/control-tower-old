@@ -8,14 +8,15 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class WebClientConfig(
-    val eurekaClient: EurekaClient
+//    val eurekaClient: EurekaClient
 ) {
 
     @Bean("UserClient")
     @LoadBalanced
     fun keycloakClient(): WebClient = WebClient
         .builder()
-        .baseUrl(eurekaClient.getNextServerFromEureka("user-service", false).homePageUrl)
+//        .baseUrl(eurekaClient.getNextServerFromEureka("user-service", false).homePageUrl)
 //        .baseUrl("lb:USER-SERVICE")
+        .baseUrl("http://user-service:8080")
         .build()
 }

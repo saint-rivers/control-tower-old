@@ -8,15 +8,16 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class WebClientConfig(
-    val eurekaClient: EurekaClient
+//    val eurekaClient: EurekaClient
 ) {
 
     @Bean("KeycloakClient")
     @LoadBalanced
     fun keycloakClient(): WebClient = WebClient
         .builder()
-        .baseUrl(eurekaClient.getNextServerFromEureka("KEYCLOAK-CLIENT", false).homePageUrl)
+//        .baseUrl(eurekaClient.getNextServerFromEureka("KEYCLOAK-CLIENT", false).homePageUrl)
 //        .baseUrl("lb:KEYCLOAK-CLIENT")
 //        .baseUrl("http://localhost:7071")
+        .baseUrl("http://keycloak-client:8080")
         .build()
 }
