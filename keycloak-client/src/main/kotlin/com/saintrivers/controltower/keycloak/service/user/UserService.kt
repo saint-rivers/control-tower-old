@@ -84,8 +84,8 @@ class UserService(
                 .realm(realm)
                 .users()
                 .create(user)
-        }
-        else throw UserAlreadyExistsException()
+
+        } else throw UserAlreadyExistsException()
     }
 
     private fun preparePasswordRepresentation(
