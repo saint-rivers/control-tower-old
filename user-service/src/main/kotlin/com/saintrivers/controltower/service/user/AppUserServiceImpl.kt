@@ -6,6 +6,7 @@ import com.saintrivers.controltower.common.exception.user.NotResourceOwnerExcept
 import com.saintrivers.controltower.common.exception.user.UserAlreadyExistsException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.entity.AppUser
+import com.saintrivers.controltower.model.request.AppUserProfileRequest
 import com.saintrivers.controltower.model.request.AppUserRequest
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
@@ -103,9 +104,16 @@ class AppUserServiceImpl(
                 .log()
         }.then()
 
-    override fun updateUser(id: String, req: AppUserRequest): Mono<AppUserDto> =
-        checkResourceOwnerThen<AppUser>(id) { appUserRepository.save(req.toEntity()) }
-            .map { it.toDto() }
+    override fun updateUser(id: String, req: AppUserProfileRequest): Mono<AppUserDto> =
+        checkResourceOwnerThen<AppUser>(id) {
+            val entity = req.toEntity()
+            entity.authId = it.authId
+            entity.id = it.id
+            entity.createdDate = it.createdDate
+            entity.lastModified = LocalDateTime.now()
+            entity.isEnabled = it.isEnabled
+            appUserRepository.save(entity)
+        }.map { it.toDto() }
 
     private fun <R> checkResourceOwnerThen(id: String, afterValidation: (AppUser) -> Mono<out R>): Mono<R> =
         appUserRepository.findByAuthId(UUID.fromString(id)).zipWith(getAuthenticationPrincipal())

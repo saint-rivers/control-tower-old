@@ -163,7 +163,7 @@ services:
     restart: on-failure
 
   zipkin-server:
-    image: openzipkin/zipkin
+    image: openzipkin/zipkin:2.23
     container_name: zipkin-server
     restart: unless-stopped
     expose:

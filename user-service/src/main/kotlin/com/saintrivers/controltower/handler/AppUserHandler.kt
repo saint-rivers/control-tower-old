@@ -1,5 +1,6 @@
 package com.saintrivers.controltower.handler
 
+import com.saintrivers.controltower.model.request.AppUserProfileRequest
 import com.saintrivers.controltower.model.request.AppUserRequest
 import com.saintrivers.controltower.service.user.AppUserService
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -34,8 +35,8 @@ class AppUserHandler(
             }
     }
 
-    fun updateUser(req: ServerRequest): Mono<ServerResponse> =
-        req.bodyToMono(AppUserRequest::class.java)
+    fun updateUserProfile(req: ServerRequest): Mono<ServerResponse> =
+        req.bodyToMono(AppUserProfileRequest::class.java)
             .flatMap {
                 val userId = req.pathVariable("id")
                 appUserService.updateUser(userId, it)
