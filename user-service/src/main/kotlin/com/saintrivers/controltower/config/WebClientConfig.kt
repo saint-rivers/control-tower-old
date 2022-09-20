@@ -15,7 +15,7 @@ class WebClientConfig(
     @LoadBalanced
     fun keycloakClient(): WebClient = WebClient
         .builder()
-        .baseUrl(eurekaClient.getNextServerFromEureka("keycloak-client", false).homePageUrl)
+        .baseUrl(eurekaClient.getNextServerFromEureka("KEYCLOAK-CLIENT", false).homePageUrl)
 //        .baseUrl("lb:KEYCLOAK-CLIENT")
 //        .baseUrl("http://localhost:7071")
         .build()
