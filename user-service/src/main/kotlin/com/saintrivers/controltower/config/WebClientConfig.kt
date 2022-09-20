@@ -17,5 +17,6 @@ class WebClientConfig(
         .builder()
         .baseUrl(eurekaClient.getNextServerFromEureka("keycloak-client", false).homePageUrl)
 //        .baseUrl("lb:KEYCLOAK-CLIENT")
+//        .baseUrl("http://localhost:7071")
         .build()
 }
