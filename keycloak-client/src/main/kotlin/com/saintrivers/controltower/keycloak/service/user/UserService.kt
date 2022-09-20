@@ -1,5 +1,6 @@
 package com.saintrivers.controltower.keycloak.service.user
 
+import com.saintrivers.controltower.common.exception.user.UserAlreadyExistsException
 import com.saintrivers.controltower.common.model.AppUser
 import com.saintrivers.controltower.common.model.UserRequest
 import org.keycloak.admin.client.Keycloak
@@ -74,13 +75,17 @@ class UserService(
     }
 
     fun create(request: UserRequest): Response {
-        val password = preparePasswordRepresentation(request.password)
-        val user = prepareUserRepresentation(request, password)
+        val existingUser = findByEmail(request.email)
+        if (existingUser.size == 0) {
+            val password = preparePasswordRepresentation(request.password)
+            val user = prepareUserRepresentation(request, password)
 
-        return keycloak
-            .realm(realm)
-            .users()
-            .create(user)
+            return keycloak
+                .realm(realm)
+                .users()
+                .create(user)
+        }
+        else throw UserAlreadyExistsException()
     }
 
     private fun preparePasswordRepresentation(
