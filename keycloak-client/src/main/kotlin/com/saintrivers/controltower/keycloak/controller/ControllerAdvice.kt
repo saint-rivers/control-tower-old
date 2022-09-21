@@ -10,6 +10,13 @@ import java.net.NoRouteToHostException
 @ControllerAdvice
 class ControllerAdvice {
 
+    @ExceptionHandler(value = [Exception::class])
+    fun handleUserExistsException(e: Exception) =
+        ResponseEntity.badRequest().body(
+            mapOf(
+                "message" to e.localizedMessage
+            )
+        )
 
     @ExceptionHandler(value = [UserAlreadyExistsException::class])
     fun handleUserExistsException(e: UserAlreadyExistsException) =
