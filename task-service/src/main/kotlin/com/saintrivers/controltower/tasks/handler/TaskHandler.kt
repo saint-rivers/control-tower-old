@@ -1,6 +1,5 @@
 package com.saintrivers.controltower.tasks.handler
 
-import com.saintrivers.controltower.tasks.model.dto.TaskDto
 import com.saintrivers.controltower.tasks.model.request.TaskRequest
 import com.saintrivers.controltower.tasks.service.TaskService
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -11,26 +10,46 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 import java.util.*
+import java.util.stream.Collectors
 
 @Component
 @SecurityRequirement(name = "controlTowerOAuth")
 class TaskHandler(val taskService: TaskService) {
+
+    fun Throwable.toErrorResponse(): Mono<ServerResponse> =
+        ServerResponse.badRequest().bodyValue(mapOf("message" to this.localizedMessage))
+
     fun getAuthenticationPrincipal(): Mono<Jwt> =
         ReactiveSecurityContextHolder.getContext()
             .map { it.authentication.principal }
             .cast(Jwt::class.java)
 
     fun findTasksOfUserInGroup(req: ServerRequest): Mono<ServerResponse> {
-        val groupId = UUID.fromString(req.pathVariable("id"))
-        val userIdRequest = req.queryParam("user")
+        val groupId = req.queryParam("group")
+        val userIdRequest = req.queryParam("assignedto")
 
-        return if (userIdRequest.isPresent) ServerResponse.ok().body(
-            taskService.getTasksOfUserInGroup(groupId, UUID.fromString(userIdRequest.get())),
-            TaskDto::class.java
-        ) else ServerResponse.ok().body(
-            taskService.getAllTasksInGroup(groupId),
-            TaskDto::class.java
-        )
+        val response =
+            if (userIdRequest.isPresent)
+                taskService
+                    .getTasksOfUserInGroup(
+                        UUID.fromString(groupId.get()),
+                        UUID.fromString(userIdRequest.get())
+                    )
+                    .collect(Collectors.toList())
+                    .flatMap {
+                        ServerResponse.ok().bodyValue(it)
+                    }
+            else
+                taskService
+                    .getAllTasksInGroup(UUID.fromString(groupId.get()))
+                    .collect(Collectors.toList())
+                    .flatMap {
+                        ServerResponse.ok().bodyValue(it)
+                    }
+
+        return response.onErrorResume {
+            it.toErrorResponse()
+        }
     }
 
     fun createTask(req: ServerRequest): Mono<ServerResponse> =

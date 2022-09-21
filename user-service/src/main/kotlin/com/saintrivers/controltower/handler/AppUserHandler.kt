@@ -21,9 +21,11 @@ class AppUserHandler(
             .flatMap {
                 ServerResponse.ok().bodyValue(it)
             }
-            .switchIfEmpty(
-                ServerResponse.noContent().build()
-            )
+            .onErrorResume {
+                ServerResponse.badRequest().bodyValue(
+                    mapOf("message" to it.localizedMessage)
+                )
+            }
     }
 
     fun registerUser(req: ServerRequest): Mono<ServerResponse> {

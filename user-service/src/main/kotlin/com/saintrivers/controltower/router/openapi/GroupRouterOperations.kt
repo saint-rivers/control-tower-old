@@ -26,6 +26,28 @@ import java.util.*
 @RouterOperations(
     value = [
         RouterOperation(
+            path = "/api/v1/groups/{id}",
+            method = [RequestMethod.GET],
+            produces = [MediaType.APPLICATION_JSON_VALUE],
+            beanClass = GroupHandler::class,
+            beanMethod = "findGroup",
+            operation = Operation(
+                operationId = "findGroup",
+                parameters = [
+                    Parameter(
+                        name = "id",
+                        `in` = ParameterIn.PATH,
+                        style = ParameterStyle.SIMPLE,
+                        explode = Explode.FALSE,
+                        required = true,
+                    )
+                ],
+                responses = [ApiResponse(
+                    content = [Content(schema = Schema(implementation = GroupDto::class))]
+                )]
+            )
+        ),
+        RouterOperation(
             path = "/api/v1/groups/{id}/users",
             method = [RequestMethod.GET],
             produces = [MediaType.APPLICATION_JSON_VALUE],

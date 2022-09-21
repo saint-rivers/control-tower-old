@@ -27,10 +27,6 @@ class GroupHandler(
             .log()
 
     fun findAllGroupMembers(req: ServerRequest): Mono<ServerResponse> =
-//        ServerResponse.ok().body(
-//            groupService.getMembersByGroupId(UUID.fromString(req.pathVariable("id"))),
-//            AppUserDto::class.java
-//        )
         groupService.getMembersByGroupId(UUID.fromString(req.pathVariable("id")))
             .collect(Collectors.toList())
             .flatMap {
@@ -47,6 +43,16 @@ class GroupHandler(
             groupService.findGroupsOfLoggedInUser(),
             GroupDto::class.java
         )
+
+    fun findGroup(req: ServerRequest): Mono<ServerResponse> =
+        groupService.findGroup(UUID.fromString(req.pathVariable("id")))
+            .flatMap {
+                ServerResponse.ok().bodyValue(it)
+            }.onErrorResume {
+                ServerResponse.badRequest().bodyValue(
+                    mapOf("message" to it.localizedMessage)
+                )
+            }
 
     fun createGroup(req: ServerRequest): Mono<ServerResponse> =
         req.bodyToMono(GroupRequest::class.java)

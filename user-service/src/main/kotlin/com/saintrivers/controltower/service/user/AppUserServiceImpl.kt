@@ -1,10 +1,7 @@
 package com.saintrivers.controltower.service.user
 
+import com.saintrivers.controltower.common.exception.user.*
 import com.saintrivers.controltower.common.model.UserRequest
-import com.saintrivers.controltower.common.exception.user.AccountAlreadyDisabledException
-import com.saintrivers.controltower.common.exception.user.NotLoggedInException
-import com.saintrivers.controltower.common.exception.user.NotResourceOwnerException
-import com.saintrivers.controltower.common.exception.user.UserAlreadyExistsException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.entity.AppUser
 import com.saintrivers.controltower.model.request.AppUserProfileRequest
@@ -71,9 +68,9 @@ class AppUserServiceImpl(
         appUserRepository.findByEmail(email)
 
     override fun findById(id: String): Mono<AppUserDto> {
-        println(id)
         return appUserRepository.findByAuthId(UUID.fromString(id))
             .map { it.toDto() }
+            .switchIfEmpty(Mono.error(UserNotFoundException()))
     }
 
     override fun deleteUser(id: String): Mono<Void> =

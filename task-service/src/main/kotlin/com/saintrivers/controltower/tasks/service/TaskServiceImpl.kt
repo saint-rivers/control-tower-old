@@ -1,7 +1,10 @@
 package com.saintrivers.controltower.tasks.service
 
+import com.saintrivers.controltower.common.exception.user.GroupNotFoundException
 import com.saintrivers.controltower.common.exception.user.NotResourceOwnerException
+import com.saintrivers.controltower.common.exception.user.UserNotFoundException
 import com.saintrivers.controltower.common.model.AppUser
+import com.saintrivers.controltower.common.model.Group
 import com.saintrivers.controltower.tasks.exception.TaskNotFoundException
 import com.saintrivers.controltower.tasks.model.dto.TaskDto
 import com.saintrivers.controltower.tasks.model.entity.Task
@@ -33,6 +36,22 @@ class TaskServiceImpl(
                     .header("Authorization", "Bearer ${it.tokenValue}")
                     .retrieve()
                     .bodyToMono(AppUser::class.java)
+                    .onErrorResume {
+                        Mono.error(UserNotFoundException())
+                    }
+            }
+
+    fun fetchGroup(id: UUID): Mono<Group> =
+        getAuthenticationPrincipal()
+            .flatMap {
+                userClient.get()
+                    .uri("/api/v1/groups/{id}", id)
+                    .header("Authorization", "Bearer ${it.tokenValue}")
+                    .retrieve()
+                    .bodyToMono(Group::class.java)
+                    .onErrorResume {
+                        Mono.error(GroupNotFoundException())
+                    }
             }
 
     fun getAuthenticationPrincipal(): Mono<Jwt> =
@@ -46,9 +65,17 @@ class TaskServiceImpl(
         entity.createdDate = LocalDateTime.now()
         entity.lastModified = entity.createdDate
         entity.createdBy = requester
-        entity.assignedTo = taskRequest.assignedTo
 
-        return taskRepository.save(entity)
+        return fetchUser(taskRequest.assignedTo)
+            .flatMap {
+                fetchUser(requester)
+            }
+            .flatMap {
+                fetchGroup(taskRequest.groupId)
+            }
+            .flatMap {
+                taskRepository.save(entity)
+            }
             .zipWith(taskRepository.selectNameOfTaskStatusId(initialTaskStatus))
             .map {
                 val res = it.t1.toDto()
@@ -74,11 +101,15 @@ class TaskServiceImpl(
 
 
     override fun getTasksOfUserInGroup(groupId: UUID, userId: UUID): Flux<TaskDto> {
-        val taskFlux = taskRepository
-            .findAllByGroupIdAndAssignedTo(
-                groupId = groupId,
-                assignedTo = userId
-            )
+        val taskFlux = fetchGroup(groupId)
+            .then(fetchUser(userId).switchIfEmpty(Mono.error(UserNotFoundException())))
+            .flatMapMany {
+                taskRepository.findAllByGroupIdAndAssignedTo(
+                    groupId = groupId,
+                    assignedTo = userId
+                )
+            }
+
 
         return taskFlux
             .map { it.toDto() }
@@ -91,16 +122,16 @@ class TaskServiceImpl(
             }
     }
 
-    override fun getAllTasksInGroup(groupId: UUID): Flux<TaskDto> {
-        return taskRepository.findAllByGroupId(groupId)
+    override fun getAllTasksInGroup(groupId: UUID): Flux<TaskDto> =
+        fetchGroup(groupId)
+            .flatMapMany {
+                taskRepository.findAllByGroupId(groupId)
+            }
             .flatMap {
                 val dto = it.toDto()
-                Mono.just(dto).fetchAndZipRelatedUsers(
-                    Task(createdBy = it.createdBy, assignedTo = it.assignedTo)
-                )
+                val task = Task(createdBy = it.createdBy, assignedTo = it.assignedTo)
+                Mono.just(dto).fetchAndZipRelatedUsers(task)
             }
-            .log()
-    }
 
     override fun removeTask(taskId: UUID): Mono<Void> {
         return taskRepository.findById(taskId)

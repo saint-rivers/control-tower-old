@@ -93,5 +93,9 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
             }
     }
 
+    override fun findGroup(groupId: UUID): Mono<GroupDto> =
+        groupRepository.findById(groupId)
+            .map { it.toDto() }
+            .switchIfEmpty(Mono.error(GroupNotFoundException()))
 
 }

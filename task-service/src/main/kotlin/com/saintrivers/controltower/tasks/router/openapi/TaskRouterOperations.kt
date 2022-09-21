@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 @RouterOperations(
     value = [
         RouterOperation(
-            path = "/api/v1/tasks/group/{id}",
+            path = "/api/v1/tasks",
             method = [RequestMethod.GET],
             produces = [MediaType.APPLICATION_JSON_VALUE],
             beanClass = TaskHandler::class,
@@ -32,15 +32,15 @@ import org.springframework.web.bind.annotation.RequestMethod
                 operationId = "findTasksOfUserInGroup",
                 parameters = [
                     Parameter(
-                        name = "id",
-                        `in` = ParameterIn.PATH,
+                        name = "group",
+                        `in` = ParameterIn.QUERY,
                         required = true,
                         explode = Explode.FALSE,
                         style = ParameterStyle.SIMPLE,
                         description = "Required to get tasks of each group",
                     ),
                     Parameter(
-                        name = "user",
+                        name = "assignedto",
                         `in` = ParameterIn.QUERY,
                         required = false,
                         explode = Explode.FALSE,

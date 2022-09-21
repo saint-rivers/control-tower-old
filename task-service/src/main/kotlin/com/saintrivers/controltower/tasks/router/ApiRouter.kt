@@ -16,7 +16,7 @@ class ApiRouter(val taskHandler: TaskHandler) {
     fun taskRouter(): RouterFunction<ServerResponse> = router {
         "/api/v1".nest {
             POST("/tasks", taskHandler::createTask)
-            GET("/tasks/group/{id}", taskHandler::findTasksOfUserInGroup)
+            GET("/tasks", taskHandler::findTasksOfUserInGroup)
             DELETE("/tasks/{id}", taskHandler::deleteTask)
         }
     }
