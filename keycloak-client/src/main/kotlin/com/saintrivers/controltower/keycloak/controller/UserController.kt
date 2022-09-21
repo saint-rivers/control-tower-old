@@ -41,6 +41,12 @@ class UserController(
     fun create(@RequestBody userRequest: UserRequest): ResponseEntity<AppUser> {
         val response = userService.create(userRequest)
 
+        println(response.status)
+        println(response.status)
+        println(response.status)
+        println(response.status)
+        println(response.status)
+
         if (response.status != 201)
             throw RuntimeException("User was not created")
 
