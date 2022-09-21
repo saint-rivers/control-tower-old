@@ -41,7 +41,18 @@ class UserController(
     fun create(@RequestBody userRequest: UserRequest): ResponseEntity<AppUser> {
         val response = userService.create(userRequest)
 
-        println(response.status)
+        println(response)
+        println(response)
+        println(response)
+        println(response)
+        println("\n")
+
+        println(response.entity)
+        println(response.entity)
+        println(response.entity)
+        println(response.entity)
+        println("\n")
+
         println(response.status)
         println(response.status)
         println(response.status)

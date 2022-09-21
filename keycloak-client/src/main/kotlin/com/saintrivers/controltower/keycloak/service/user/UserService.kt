@@ -80,10 +80,12 @@ class UserService(
             val password = preparePasswordRepresentation(request.password)
             val user = prepareUserRepresentation(request, password)
 
-            return keycloak
+            val res = keycloak
                 .realm(realm)
                 .users()
                 .create(user)
+
+            return res
 
         } else throw UserAlreadyExistsException()
     }
