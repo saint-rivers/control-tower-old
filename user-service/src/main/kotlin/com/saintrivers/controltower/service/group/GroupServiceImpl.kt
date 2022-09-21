@@ -44,7 +44,10 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
 
             // check if the record already exists
             .flatMap { groupRepository.findRecord(groupId = memberRequest.groupId, userId = it) }
-            .map { it ?: throw MemberAlreadyAddedException() }
+            .map {
+               if (it != null) throw MemberAlreadyAddedException()
+                else Unit
+            }
 
             // insert record after the previous checks
             .then(appUserRepository.findIdByAuthId(memberRequest.userId))
@@ -58,7 +61,9 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
                     addedBy = addedBy
                 )
             }
-            .switchIfEmpty(Mono.error(RuntimeException("unable to add member to group")))
+            .onErrorResume {
+                Mono.error(RuntimeException("unable to add member to group"))
+            }
 
 
     override fun getMembersByGroupId(groupId: UUID): Flux<AppUserDto> =
