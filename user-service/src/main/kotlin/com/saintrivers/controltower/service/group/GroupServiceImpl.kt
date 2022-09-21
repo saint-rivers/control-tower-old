@@ -1,7 +1,8 @@
 package com.saintrivers.controltower.service.group
 
 import com.saintrivers.controltower.common.exception.user.MemberAlreadyAddedException
-import com.saintrivers.controltower.common.exception.content.NoContentException
+import com.saintrivers.controltower.common.exception.user.GroupNotFoundException
+import com.saintrivers.controltower.common.exception.user.UserNotFoundException
 import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest
@@ -32,34 +33,44 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
     }
 
     override fun addMember(memberRequest: MemberRequest, requesterId: UUID): Mono<UUID> =
-        appUserRepository.findIdByAuthId(requesterId)
-            .flatMap { user ->
-                groupRepository.memberExistsInGroup(groupId = memberRequest.groupId, userId = user)
-                    .log()
-                    .flatMap { exists ->
-                        if (!exists) {
-                            appUserRepository.findIdByAuthId(memberRequest.userId)
-                                .zipWith(appUserRepository.findIdByAuthId(requesterId))
-                                .flatMap {
-                                    val member = it.t1
-                                    val addedBy = it.t2
+        appUserRepository.findByAuthId(memberRequest.userId)
+            .switchIfEmpty(Mono.error(UserNotFoundException()))
+            .flatMap {
+                groupRepository.findById(memberRequest.groupId)
+            }
+            .switchIfEmpty(Mono.error(GroupNotFoundException()))
+            .flatMap {
+                appUserRepository.findIdByAuthId(requesterId)
+            }
+            .switchIfEmpty(Mono.error(UserNotFoundException()))
+            .flatMap {
+                groupRepository.findRecord(groupId = memberRequest.groupId, userId = it)
+            }
+            .flatMap {
+                appUserRepository.findIdByAuthId(memberRequest.userId)
+            }
+            .zipWith(appUserRepository.findIdByAuthId(requesterId))
+            .flatMap {
+                val member = it.t1
+                val addedBy = it.t2
 
-                                    groupRepository.addMember(
-                                        groupId = memberRequest.groupId,
-                                        userId = member,
-                                        addedBy = addedBy
-                                    )
-                                }
-                                .onErrorResume {
-                                    Mono.error(MemberAlreadyAddedException())
-                                }
-                        } else Mono.error(MemberAlreadyAddedException())
-                    }
+                groupRepository.addMember(
+                    groupId = memberRequest.groupId,
+                    userId = member,
+                    addedBy = addedBy
+                )
+            }
+            .onErrorResume {
+                Mono.error(MemberAlreadyAddedException())
             }
 
-    override fun getMembersByGroupId(groupId: UUID): Flux<AppUserDto> {
-        return groupRepository.findAllByGroupId(groupId).map { it.toDto() }
-    }
+    override fun getMembersByGroupId(groupId: UUID): Flux<AppUserDto> =
+        groupRepository.findById(groupId)
+            .switchIfEmpty(Mono.error(GroupNotFoundException()))
+            .flatMapMany {
+                groupRepository.findAllByGroupId(groupId)
+            }
+            .map { it.toDto() }
 
     override fun findGroupsOfLoggedInUser(): Flux<GroupDto> {
 
@@ -76,10 +87,7 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
             .flatMapMany {
                 groupRepository.findAllGroupsByMemberId(it)
             }
-            .switchIfEmpty(Mono.error(NoContentException()))
-//            .onErrorResume {
-//                Mono.error(mapOf("message" to it.localizedMessage))
-//            }
+//            .switchIfEmpty(Mono.error(NoContentException()))
             .map {
                 it.toDto()
             }

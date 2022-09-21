@@ -1,7 +1,6 @@
 package com.saintrivers.controltower.handler
 
 import com.saintrivers.controltower.common.exception.user.NotLoggedInException
-import com.saintrivers.controltower.model.dto.AppUserDto
 import com.saintrivers.controltower.model.dto.GroupDto
 import com.saintrivers.controltower.model.request.GroupRequest
 import com.saintrivers.controltower.model.request.MemberRequest
@@ -14,6 +13,7 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse
 import reactor.core.publisher.Mono
 import java.util.*
+import java.util.stream.Collectors
 
 @Component
 @SecurityRequirement(name = "controlTowerOAuth")
@@ -27,10 +27,20 @@ class GroupHandler(
             .log()
 
     fun findAllGroupMembers(req: ServerRequest): Mono<ServerResponse> =
-        ServerResponse.ok().body(
-            groupService.getMembersByGroupId(UUID.fromString(req.pathVariable("id"))),
-            AppUserDto::class.java
-        )
+//        ServerResponse.ok().body(
+//            groupService.getMembersByGroupId(UUID.fromString(req.pathVariable("id"))),
+//            AppUserDto::class.java
+//        )
+        groupService.getMembersByGroupId(UUID.fromString(req.pathVariable("id")))
+            .collect(Collectors.toList())
+            .flatMap {
+                ServerResponse.ok().bodyValue(it)
+            }
+            .onErrorResume {
+                ServerResponse.badRequest().bodyValue(
+                    mapOf("message" to it.localizedMessage)
+                )
+            }
 
     fun findGroupsOfLoggedInUser(req: ServerRequest): Mono<ServerResponse> =
         ServerResponse.ok().body(

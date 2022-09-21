@@ -46,7 +46,7 @@ class TaskServiceImpl(
         entity.createdDate = LocalDateTime.now()
         entity.lastModified = entity.createdDate
         entity.createdBy = requester
-        entity.assignedTo = requester
+        entity.assignedTo = taskRequest.assignedTo
 
         return taskRepository.save(entity)
             .zipWith(taskRepository.selectNameOfTaskStatusId(initialTaskStatus))

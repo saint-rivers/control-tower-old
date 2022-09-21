@@ -1,6 +1,8 @@
 #!/bin/bash
 
-sudo ./gradlew build &&
-  docker stop control-tower_keycloak-client_1 &&
-  docker rm control-tower_keycloak-client_1 &&
-  docker-compose up -d --build keycloak-client
+SERVICE="control-tower_-task-service_1"
+
+./gradlew build &&
+  docker stop "$SERVICE" &&
+  docker rm "$SERVICE" &&
+  docker-compose up -d --build task-service
