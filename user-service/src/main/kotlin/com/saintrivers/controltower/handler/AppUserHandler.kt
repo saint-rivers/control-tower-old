@@ -1,5 +1,6 @@
 package com.saintrivers.controltower.handler
 
+import com.saintrivers.controltower.common.exception.user.UserNotFoundException
 import com.saintrivers.controltower.model.request.AppUserProfileRequest
 import com.saintrivers.controltower.model.request.AppUserRequest
 import com.saintrivers.controltower.service.user.AppUserService
@@ -20,6 +21,9 @@ class AppUserHandler(
             .flatMap {
                 ServerResponse.ok().bodyValue(it)
             }
+            .switchIfEmpty(
+                ServerResponse.noContent().build()
+            )
     }
 
     fun registerUser(req: ServerRequest): Mono<ServerResponse> {
@@ -53,6 +57,7 @@ class AppUserHandler(
             .flatMap {
                 ServerResponse.accepted().build()
             }
+            .switchIfEmpty(Mono.error(UserNotFoundException()))
             .onErrorResume {
                 ServerResponse.badRequest().bodyValue(mapOf("message" to it.localizedMessage))
             }

@@ -2,6 +2,7 @@ package com.saintrivers.controltower.service.user
 
 import com.saintrivers.controltower.common.model.UserRequest
 import com.saintrivers.controltower.common.exception.user.AccountAlreadyDisabledException
+import com.saintrivers.controltower.common.exception.user.NotLoggedInException
 import com.saintrivers.controltower.common.exception.user.NotResourceOwnerException
 import com.saintrivers.controltower.common.exception.user.UserAlreadyExistsException
 import com.saintrivers.controltower.model.dto.AppUserDto
@@ -76,10 +77,14 @@ class AppUserServiceImpl(
     }
 
     override fun deleteUser(id: String): Mono<Void> =
-        checkResourceOwnerThen<Void>(id) {
+        checkResourceOwnerThenReturn<Void>(id) {
             getAuthenticationPrincipal()
                 .map { jwt ->
+                    if (!jwt.claims.containsKey("email")) throw NotLoggedInException()
                     jwt.tokenValue
+                }
+                .onErrorResume {
+                    Mono.error(it)
                 }
                 .flatMap { token ->
                     keycloakClient.delete()
@@ -101,11 +106,10 @@ class AppUserServiceImpl(
                             }
                     } else Mono.error(AccountAlreadyDisabledException())
                 }
-                .log()
         }.then()
 
     override fun updateUser(id: String, req: AppUserProfileRequest): Mono<AppUserDto> =
-        checkResourceOwnerThen<AppUser>(id) {
+        checkResourceOwnerThenReturn<AppUser>(id) {
             val entity = req.toEntity()
             entity.authId = it.authId
             entity.id = it.id
@@ -115,7 +119,7 @@ class AppUserServiceImpl(
             appUserRepository.save(entity)
         }.map { it.toDto() }
 
-    private fun <R> checkResourceOwnerThen(id: String, afterValidation: (AppUser) -> Mono<out R>): Mono<R> =
+    private fun <R> checkResourceOwnerThenReturn(id: String, afterValidation: (AppUser) -> Mono<out R>): Mono<R> =
         appUserRepository.findByAuthId(UUID.fromString(id)).zipWith(getAuthenticationPrincipal())
             .flatMap {
                 if (it.t1.authId.toString() == it.t2.claims["sub"].toString())
