@@ -33,36 +33,33 @@ class GroupServiceImpl(val groupRepository: GroupRepository, val appUserReposito
     }
 
     override fun addMember(memberRequest: MemberRequest, requesterId: UUID): Mono<UUID> =
-        appUserRepository.findByAuthId(memberRequest.userId)
+        appUserRepository
+            // check if provided IDs exist
+            .findByAuthId(memberRequest.userId)
             .switchIfEmpty(Mono.error(UserNotFoundException()))
-            .flatMap {
-                groupRepository.findById(memberRequest.groupId)
-            }
+            .flatMap { groupRepository.findById(memberRequest.groupId) }
             .switchIfEmpty(Mono.error(GroupNotFoundException()))
-            .flatMap {
-                appUserRepository.findIdByAuthId(requesterId)
-            }
+            .flatMap { appUserRepository.findIdByAuthId(requesterId) }
             .switchIfEmpty(Mono.error(UserNotFoundException()))
-            .flatMap {
-                groupRepository.findRecord(groupId = memberRequest.groupId, userId = it)
-            }
-            .flatMap {
-                appUserRepository.findIdByAuthId(memberRequest.userId)
-            }
+
+            // check if the record already exists
+            .flatMap { groupRepository.findRecord(groupId = memberRequest.groupId, userId = it) }
+            .map { it ?: throw MemberAlreadyAddedException() }
+
+            // insert record after the previous checks
+            .then(appUserRepository.findIdByAuthId(memberRequest.userId))
             .zipWith(appUserRepository.findIdByAuthId(requesterId))
             .flatMap {
                 val member = it.t1
                 val addedBy = it.t2
-
                 groupRepository.addMember(
                     groupId = memberRequest.groupId,
                     userId = member,
                     addedBy = addedBy
                 )
             }
-            .onErrorResume {
-                Mono.error(MemberAlreadyAddedException())
-            }
+            .switchIfEmpty(Mono.error(RuntimeException("unable to add member to group")))
+
 
     override fun getMembersByGroupId(groupId: UUID): Flux<AppUserDto> =
         groupRepository.findById(groupId)
