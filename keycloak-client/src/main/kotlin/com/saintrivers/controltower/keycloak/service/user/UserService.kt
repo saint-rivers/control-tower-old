@@ -1,5 +1,6 @@
 package com.saintrivers.controltower.keycloak.service.user
 
+import com.saintrivers.controltower.common.exception.user.NotLoggedInException
 import com.saintrivers.controltower.common.exception.user.UserAlreadyExistsException
 import com.saintrivers.controltower.common.model.AppUser
 import com.saintrivers.controltower.common.model.UserRequest
@@ -10,6 +11,7 @@ import org.keycloak.representations.idm.UserRepresentation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import com.saintrivers.controltower.mapper.toDto
+import org.springframework.security.oauth2.jwt.Jwt
 import javax.ws.rs.core.Response
 
 
@@ -74,18 +76,19 @@ class UserService(
             .delete(userId)
     }
 
-    fun create(request: UserRequest): Response {
+    fun create(request: UserRequest, jwt: Jwt): Response {
+//        val loggedInUser = findById(jwt.claims["sub"].toString())
+        if (jwt.claims["sub"].toString().isEmpty()) throw NotLoggedInException()
+
         val existingUser = findByEmail(request.email)
         if (existingUser.size == 0) {
             val password = preparePasswordRepresentation(request.password)
             val user = prepareUserRepresentation(request, password)
 
-            val res = keycloak
+            return keycloak
                 .realm(realm)
                 .users()
                 .create(user)
-
-            return res
 
         } else throw UserAlreadyExistsException()
     }

@@ -5,7 +5,10 @@ import com.saintrivers.controltower.common.model.UserRequest
 import com.saintrivers.controltower.keycloak.service.role.RoleService
 import com.saintrivers.controltower.keycloak.service.user.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
+import java.rmi.UnexpectedException
 import java.util.UUID
 
 @RestController
@@ -38,30 +41,21 @@ class UserController(
         userService.findByEmail(email)
 
     @PostMapping
-    fun create(@RequestBody userRequest: UserRequest): ResponseEntity<AppUser> {
-        val response = userService.create(userRequest)
+    fun create(
+        @AuthenticationPrincipal jwt: Jwt,
+        @RequestBody userRequest: UserRequest
+    ): ResponseEntity<AppUser> {
+        val response = userService.create(userRequest, jwt)
 
-        println(response)
-        println(response)
-        println(response)
-        println(response)
-        println("\n")
+//        if (response.status != 201)
+//            throw RuntimeException("User was not created")
 
-        println(response.entity)
-        println(response.entity)
-        println(response.entity)
-        println(response.entity)
-        println("\n")
+        when (response.status) {
+            201 -> println("user registered successfully")
+            409 -> throw UnexpectedException("conflict response from keycloak server")
+            else -> throw RuntimeException("User was not created")
+        }
 
-        println(response.status)
-        println(response.status)
-        println(response.status)
-        println(response.status)
-
-        if (response.status != 201)
-            throw RuntimeException("User was not created")
-
-//        return ResponseEntity.created(response.location).build()
         val createdUser = userService.findByEmail(userRequest.email)[0]
         return ResponseEntity.ok().body(createdUser)
     }
