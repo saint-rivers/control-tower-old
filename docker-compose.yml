@@ -67,6 +67,7 @@ services:
       - POSTGRES_PASSWORD=taskadmsecret
     volumes:
       - task_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   user-database:
     <<: *postgres-config
@@ -79,6 +80,7 @@ services:
       - POSTGRES_PASSWORD=useradmsecret
     volumes:
       - user_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   eureka-server:
     <<: *jre-image
@@ -98,6 +100,7 @@ services:
       retries: 5
       interval: 10s
       timeout: 5s
+    restart: unless-stopped
 
   api-gateway:
     <<: *jre-image
@@ -111,6 +114,7 @@ services:
       <<: *config-client
     ports:
       - "8080:8080"
+    restart: unless-stopped
 
   keycloak-client:
     <<: *jre-image
@@ -130,6 +134,7 @@ services:
       <<: *config-client
     ports:
       - "6068-6069:8080"
+    restart: on-failure
 
   user-service:
     <<: *jre-image
