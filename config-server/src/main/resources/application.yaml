@@ -15,7 +15,7 @@ spring:
             - keycloak-client
             - api-gateway
             - eureka-server
-          default-label: main
+          default-label: master
           ignore-local-ssh-settings: true
   application:
     name: config-server
@@ -27,7 +27,8 @@ management:
   endpoint:
     health:
       enabled: true
+      show-details: always
   endpoints:
     web:
       exposure:
-        include: refresh,health
+        include: "*"
