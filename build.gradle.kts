@@ -59,6 +59,7 @@ subprojects {
         implementation("org.springframework.cloud:spring-cloud-starter-sleuth:3.1.3")
         implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin:3.1.3")
         implementation("org.springframework.boot:spring-boot-starter-actuator")
+        implementation("io.micrometer:micrometer-registry-prometheus:1.9.3")
 
         if (project.name.contains("-client")
             || project.name.contains("-service")
